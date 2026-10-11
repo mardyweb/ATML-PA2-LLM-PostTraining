@@ -1,0 +1,32 @@
+{
+  "adapter": "outputs/task3_grpo/fork_dr_grpo",
+  "num_prompts": 128,
+  "num_dropped_long_prompts": 35,
+  "max_new_tokens": 768,
+  "decoding": {
+    "temperature": 0.7,
+    "top_p": 0.9,
+    "do_sample": true
+  },
+  "seed": 6304,
+  "reward_mean": 1.7433136254549026,
+  "reward_std": 1.3438669023286165,
+  "reward_sem": 0.11878217495609054,
+  "reward_with_eos_penalty_mean": 1.7433136254549026,
+  "kl_token_mean": 0.00013042604897195255,
+  "kl_seq_sum_mean": 0.03875589693046777,
+  "entropy_token_mean": 1.000260571253759,
+  "length_tokens": {
+    "mean": 297.1484375,
+    "std": 256.85182650471575,
+    "median": 245.0,
+    "q1": 54.5,
+    "q3": 511.25,
+    "iqr": 456.75,
+    "n": 128
+  },
+  "truncation_rate": 0.078125,
+  "eos_rate": 0.921875,
+  "corr_reward_vs_length": 0.3880122748216804,
+  "eval_wall_clock_s": 348.2
+}

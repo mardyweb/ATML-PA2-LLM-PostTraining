@@ -1,0 +1,32 @@
+{
+  "run_name": "fork_grpo",
+  "loss_type": "grpo",
+  "updates": 8,
+  "prompts_per_update": 1,
+  "num_generations": 4,
+  "policy_epochs": 1,
+  "learning_rate": 5e-06,
+  "clip_epsilon": 0.2,
+  "kl_beta": 0.1,
+  "max_completion_length": 512,
+  "mask_truncated_completions": true,
+  "seed": 6304,
+  "prompt_offset": 0,
+  "prompt_ids": [
+    "b0d35a5e39f7052ac66ea59ebb31bf70535e3ed3cb294dafdb4918e9fda4e879",
+    "361c9921abedfb482ab331cd1f1d5dcb6b038376b9939a1afff6339e87060bd3",
+    "031b833749cbdeab4b1f4ba4af6e325b5c17791958e10b7615a1e97ca33b0703",
+    "767471940df7a8f247484346e1fcea4d02eca6d1fcbc90d264b0dbb94c39ba68",
+    "81a35c3e324857688ecb9cd1e68c14275f01d7752ed6a0d2a5c9cf4cbeaf0439",
+    "9ea7bde8bc147d9faa96dd85d06930f25660cdfd5239227be23a5ff2728637e6",
+    "317132817254b4f8e35bbffa6faba1b8e1abbad8b3295186e73167375ec4176f",
+    "a5cc4839643a3b1c510c2de1d870074538d4d195a87e5a8cd0a09730b474b620"
+  ],
+  "generated_tokens": 9480,
+  "wall_clock_s": 130.3,
+  "peak_vram_gb": 14.18,
+  "gpu": "NVIDIA A100-SXM4-40GB",
+  "start_policy": "checkpoints/grpo_midpoint_policy",
+  "adapter_path": "/content/drive/MyDrive/ATML_PA2/ATML-PA2-LLM-PostTraining/outputs/task3_grpo/fork_grpo",
+  "per_completion_grad_norms": true
+}

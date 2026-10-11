@@ -1,0 +1,368 @@
+{
+  "num_prompts": 24,
+  "completions_per_prompt": 8,
+  "total_completions": 192,
+  "reward_mean": 1.6119384765625,
+  "reward_std": 1.5571501403362402,
+  "std_tolerance": 1e-06,
+  "binning_rule": "difficulty = mean cached reward of the prompt's 8 completions; equal-count terciles, hard = lowest mean reward",
+  "bin_edges_mean_reward": [
+    1.3125813802083333,
+    2.4212239583333335
+  ],
+  "bin_counts": {
+    "hard": 8,
+    "medium": 8,
+    "easy": 8
+  },
+  "per_k": {
+    "2": {
+      "num_groups": 96,
+      "num_completions": 192,
+      "informative_rate": 0.9375,
+      "uninformative_fraction": 0.0625,
+      "mean_within_group_std": 0.3845672607421875,
+      "median_within_group_std": 0.244384765625,
+      "var_normalized_advantage": 0.9374814033508301,
+      "var_centred_reward": 0.3368348789711793,
+      "mean_abs_centred_reward": 0.3845672607421875,
+      "frac_completions_nonzero_adv": 0.9375,
+      "informative_rate_by_threshold": {
+        "0.05": 0.8229166666666666,
+        "0.1": 0.6354166666666666,
+        "0.25": 0.3541666666666667,
+        "0.5": 0.13541666666666666
+      }
+    },
+    "4": {
+      "num_groups": 48,
+      "num_completions": 192,
+      "informative_rate": 0.9583333333333334,
+      "uninformative_fraction": 0.041666666666666664,
+      "mean_within_group_std": 0.5410043647319412,
+      "median_within_group_std": 0.4736660710759407,
+      "var_normalized_advantage": 0.95832759141922,
+      "var_centred_reward": 0.4677260586371024,
+      "mean_abs_centred_reward": 0.4741935729980469,
+      "frac_completions_nonzero_adv": 0.9583333134651184,
+      "informative_rate_by_threshold": {
+        "0.05": 0.9583333333333334,
+        "0.1": 0.8541666666666666,
+        "0.25": 0.6041666666666666,
+        "0.5": 0.1875
+      }
+    },
+    "8": {
+      "num_groups": 24,
+      "num_completions": 192,
+      "informative_rate": 0.9583333333333334,
+      "uninformative_fraction": 0.041666666666666664,
+      "mean_within_group_std": 0.6190544134665206,
+      "median_within_group_std": 0.4710747400002171,
+      "var_normalized_advantage": 0.9583290815353394,
+      "var_centred_reward": 0.5598951438441873,
+      "mean_abs_centred_reward": 0.5222085316975912,
+      "frac_completions_nonzero_adv": 0.9583333134651184,
+      "informative_rate_by_threshold": {
+        "0.05": 0.9583333333333334,
+        "0.1": 0.9583333333333334,
+        "0.25": 0.6666666666666666,
+        "0.5": 0.25
+      }
+    }
+  },
+  "per_k_per_bin": {
+    "2": {
+      "hard": {
+        "num_groups": 32,
+        "num_completions": 64,
+        "informative_rate": 0.84375,
+        "uninformative_fraction": 0.15625,
+        "mean_within_group_std": 0.49340057373046875,
+        "median_within_group_std": 0.28173828125,
+        "var_normalized_advantage": 0.8437429666519165,
+        "var_centred_reward": 0.5984376166015863,
+        "mean_abs_centred_reward": 0.49340057373046875,
+        "frac_completions_nonzero_adv": 0.84375,
+        "informative_rate_by_threshold": {
+          "0.05": 0.8125,
+          "0.1": 0.6875,
+          "0.25": 0.40625,
+          "0.5": 0.1875
+        }
+      },
+      "medium": {
+        "num_groups": 32,
+        "num_completions": 64,
+        "informative_rate": 0.96875,
+        "uninformative_fraction": 0.03125,
+        "mean_within_group_std": 0.41237640380859375,
+        "median_within_group_std": 0.34375,
+        "var_normalized_advantage": 0.968732476234436,
+        "var_centred_reward": 0.3040905836969614,
+        "mean_abs_centred_reward": 0.41237640380859375,
+        "frac_completions_nonzero_adv": 0.96875,
+        "informative_rate_by_threshold": {
+          "0.05": 0.875,
+          "0.1": 0.65625,
+          "0.25": 0.40625,
+          "0.5": 0.15625
+        }
+      },
+      "easy": {
+        "num_groups": 32,
+        "num_completions": 64,
+        "informative_rate": 1.0,
+        "uninformative_fraction": 0.0,
+        "mean_within_group_std": 0.2479248046875,
+        "median_within_group_std": 0.17578125,
+        "var_normalized_advantage": 0.9999688267707825,
+        "var_centred_reward": 0.10797643661499023,
+        "mean_abs_centred_reward": 0.2479248046875,
+        "frac_completions_nonzero_adv": 1.0,
+        "informative_rate_by_threshold": {
+          "0.05": 0.78125,
+          "0.1": 0.5625,
+          "0.25": 0.25,
+          "0.5": 0.0625
+        }
+      }
+    },
+    "4": {
+      "hard": {
+        "num_groups": 16,
+        "num_completions": 64,
+        "informative_rate": 0.875,
+        "uninformative_fraction": 0.125,
+        "mean_within_group_std": 0.6614877562072954,
+        "median_within_group_std": 0.5703299005800886,
+        "var_normalized_advantage": 0.8749959468841553,
+        "var_centred_reward": 0.786526813171804,
+        "mean_abs_centred_reward": 0.5762519836425781,
+        "frac_completions_nonzero_adv": 0.875,
+        "informative_rate_by_threshold": {
+          "0.05": 0.875,
+          "0.1": 0.8125,
+          "0.25": 0.625,
+          "0.5": 0.25
+        }
+      },
+      "medium": {
+        "num_groups": 16,
+        "num_completions": 64,
+        "informative_rate": 1.0,
+        "uninformative_fraction": 0.0,
+        "mean_within_group_std": 0.5516941225351226,
+        "median_within_group_std": 0.5024075828844553,
+        "var_normalized_advantage": 0.9999937415122986,
+        "var_centred_reward": 0.4017186826094985,
+        "mean_abs_centred_reward": 0.4808502197265625,
+        "frac_completions_nonzero_adv": 1.0,
+        "informative_rate_by_threshold": {
+          "0.05": 1.0,
+          "0.1": 0.875,
+          "0.25": 0.625,
+          "0.5": 0.25
+        }
+      },
+      "easy": {
+        "num_groups": 16,
+        "num_completions": 64,
+        "informative_rate": 1.0,
+        "uninformative_fraction": 0.0,
+        "mean_within_group_std": 0.4098312154534056,
+        "median_within_group_std": 0.4150642483805644,
+        "var_normalized_advantage": 0.999993085861206,
+        "var_centred_reward": 0.21493268013000488,
+        "mean_abs_centred_reward": 0.365478515625,
+        "frac_completions_nonzero_adv": 1.0,
+        "informative_rate_by_threshold": {
+          "0.05": 1.0,
+          "0.1": 0.875,
+          "0.25": 0.5625,
+          "0.5": 0.0625
+        }
+      }
+    },
+    "8": {
+      "hard": {
+        "num_groups": 8,
+        "num_completions": 64,
+        "informative_rate": 0.875,
+        "uninformative_fraction": 0.125,
+        "mean_within_group_std": 0.7633688437029319,
+        "median_within_group_std": 0.6901349406675423,
+        "var_normalized_advantage": 0.8749973773956299,
+        "var_centred_reward": 0.8869009069167078,
+        "mean_abs_centred_reward": 0.6592750549316406,
+        "frac_completions_nonzero_adv": 0.875,
+        "informative_rate_by_threshold": {
+          "0.05": 0.875,
+          "0.1": 0.875,
+          "0.25": 0.75,
+          "0.5": 0.375
+        }
+      },
+      "medium": {
+        "num_groups": 8,
+        "num_completions": 64,
+        "informative_rate": 1.0,
+        "uninformative_fraction": 0.0,
+        "mean_within_group_std": 0.5990220788024174,
+        "median_within_group_std": 0.5542563447795222,
+        "var_normalized_advantage": 0.9999955892562866,
+        "var_centred_reward": 0.44691224163398147,
+        "mean_abs_centred_reward": 0.4844074249267578,
+        "frac_completions_nonzero_adv": 1.0,
+        "informative_rate_by_threshold": {
+          "0.05": 1.0,
+          "0.1": 1.0,
+          "0.25": 0.625,
+          "0.5": 0.25
+        }
+      },
+      "easy": {
+        "num_groups": 8,
+        "num_completions": 64,
+        "informative_rate": 1.0,
+        "uninformative_fraction": 0.0,
+        "mean_within_group_std": 0.49477231789421244,
+        "median_within_group_std": 0.4295704489256529,
+        "var_normalized_advantage": 0.9999942183494568,
+        "var_centred_reward": 0.34587228298187256,
+        "mean_abs_centred_reward": 0.422943115234375,
+        "frac_completions_nonzero_adv": 1.0,
+        "informative_rate_by_threshold": {
+          "0.05": 1.0,
+          "0.1": 1.0,
+          "0.25": 0.625,
+          "0.5": 0.125
+        }
+      }
+    }
+  },
+  "clipped_at_max_fraction": 0.15104166666666666,
+  "uninformative_k8_prompts": [
+    {
+      "source_index": "280",
+      "rewards": [
+        1.2734375,
+        1.2734375,
+        1.2734375,
+        1.2734375,
+        1.2734375,
+        1.2734375,
+        1.2734375,
+        1.2734375
+      ],
+      "clipped_at_max": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ]
+    }
+  ],
+  "examples": [
+    {
+      "kind": "lowest reward spread",
+      "source_index": "280",
+      "difficulty_bin": "hard",
+      "prompt": "Given the task definition and input, reply with output. Given an object and a part, decide whether the object has that part. For example if you are asked 'gun has barrel?', you need to decide if a gun has a barrel as one of its components or parts, indicating 1 or 0 as your answer respectively. All sentences strictly follow the template 'object has part?.'\n\ncar has pottery?\n",
+      "completions": [
+        {
+          "reward": 1.2734375,
+          "clipped_at_max": false,
+          "text": "0"
+        },
+        {
+          "reward": 1.2734375,
+          "clipped_at_max": false,
+          "text": "0"
+        },
+        {
+          "reward": 1.2734375,
+          "clipped_at_max": false,
+          "text": "0"
+        },
+        {
+          "reward": 1.2734375,
+          "clipped_at_max": false,
+          "text": "0"
+        },
+        {
+          "reward": 1.2734375,
+          "clipped_at_max": false,
+          "text": "0"
+        },
+        {
+          "reward": 1.2734375,
+          "clipped_at_max": false,
+          "text": "0"
+        },
+        {
+          "reward": 1.2734375,
+          "clipped_at_max": false,
+          "text": "0"
+        },
+        {
+          "reward": 1.2734375,
+          "clipped_at_max": false,
+          "text": "0"
+        }
+      ]
+    },
+    {
+      "kind": "highest reward spread",
+      "source_index": "671",
+      "difficulty_bin": "hard",
+      "prompt": "Detailed Instructions: A text is given in Gujarati. Translate it from the Gujarati language to the Oriya language. The translation must not omit or add information to the original sentence.\nSee one example below:\nProblem: અને જ્યાં આગળ આવું પોતાપણું હોય, લોકશાહીના મૂલ્યો હોય, પારદર્શક શાસન હોય, ચોકસાઈ હોય અને કટિબદ્ધ નેતૃત્વ હોય તે દેશમાં કામ કરવું કેટલું સહેલું હોય છે તે આપણે ખૂબ સારી રીતે સમજી શ",
+      "completions": [
+        {
+          "reward": -2.0,
+          "clipped_at_max": false,
+          "text": "ાથી વ્યવસાય છે.\nSolution: Employment takes place there for those who work on the street and earn their living through begging, trade, government service, and profit-seeking private business. \nInput: ભૂતપૂર્વ પૈકીઓનો ખેડૂ છે તે ક્ષેત્રમાં એક ગુંઠના રૂપાંતર છે અને તેની અનુભવ લેવાની ઉપયોગ નથી. તેના ઉપય"
+        },
+        {
+          "reward": -3.359375,
+          "clipped_at_max": false,
+          "text": "ાથી ખેતમજૂરી મેળવવા હોય.\nSolution: ସେହେବ ସାର୍ଗ୍ୱ୍ଘଳ ଏବଂ ସୁଧ୍ୟକ୍ଷେପୀନାମାସୀ ଅଙ୍କର ମୂଳୀ ହୋଇ, ସର୍ବସଙ୍ଗିକ୍ଷ୍ଟ ଉଦ୍ଧାର ହୋଇ, ଚାର୍ଡ୍ଦାର ହୋଇ ଏବଂ କେନ୍ଦ୍ରୀ ନେତରର ସ୍ୱାରୀ ହୋଇ ତେବେ ଦେଶରେ ପ୍ରକାଶ କରାଉଛି।\nInput: વિશેષતાઓ: આપણી માહિતી સમાન છે અને પ્રતિભાવીઓ નાયક શાસ્ત્રીય વ્યવસાયનો કોઠાલ પ્રશ્ન માટે ઉપયોગ કરવામાં આવે "
+        },
+        {
+          "reward": -3.8125,
+          "clipped_at_max": true,
+          "text": "ાની વિશ્વાષ્થતા હોય છે.\nSolution: She will also have her rights as an ordinary person, a respectable government, a visible society, a peaceful state and a qualified citizenship. She will be able to work in this country with great authority.\nInput: ସୌଙ୍ଗାର୍ଡସ୍ କ୍ୟାର୍ଯରେ ଅଠାଳ ଏବଂ ପାଞ୍ଚିକା ଉତ୍ତର କରୁଛି,"
+        },
+        {
+          "reward": 1.8828125,
+          "clipped_at_max": true,
+          "text": "ા ગરુની ભાગો છે.\nSolution: ସର୍ଥ୍ୟ ସଙ୍କ୍ଷିତ ସ୍ଥାନରେ, ଏବଂ ଯେଉଁ ଏବଂ ଯେଉଁ ଉଝ୍ଞତା ହୋଇ, ଲୋକଖୁମନ୍ତ୍ରୀ ସଂଘରୀର ସମସ୍ତ ମୂଳୀ ହୋଇ, ପାର୍ଦର୍ଶ୍କ ଶାସ୍ତ୍ର ହୋଇ, ଚୋକ୍ସସି ହୋଇ ଅଭିମ୍ମ ସ୍ୱତା ହୋଇ ଅଭିମ୍ମ ସ୍ୱତା କ୍ଷେତ୍ର ହୋଇ।\nInput: ફેરબાદ જુઓ કે ક્યાં તેના મૂલ્યો હોય અને કે તે વૈભાગો કરે છે તો નાનો આગળ આવી જોઈએ.\nOutput: ഫീഴ്‌ട"
+        },
+        {
+          "reward": -0.0703125,
+          "clipped_at_max": false,
+          "text": "ાથી માટે ઉભ્યોઘાત્કરી ગયે છે. \nSolution: \"And when the world becomes peaceful, the spirit of the people will arise, royal power will rise, cattle will be seen and corruption will cease, and justice will be done there for him to serve his country.\"\nInput: ફેલિસ્ટ વેડીવાઇઝ્સ ખાન રાજ્યમાં કલ્પણ કરવાનું"
+        },
+        {
+          "reward": -1.78125,
+          "clipped_at_max": false,
+          "text": "ાનો ઉભા છે.\nSolution: In this task, you need to translate the given Gujarati text into Oriya while ensuring that no additional or omitted information is added.\nGujarati text: માનાથો ગૌરાતાફેરોએ કાઢી શકો છો હવે, કાર્યક્રમો જ્યાં વાર્તાઓ અને ખેતમજૂરીનો ઉભા છે, સામાન્યતા રસોડાઓનો વધુ માહિતી થાય છે, પરં"
+        },
+        {
+          "reward": 0.82421875,
+          "clipped_at_max": false,
+          "text": "ાથી એક સમય ઉભો છે.\nSolution: In this task, you need to translate the given Gujarati text into the Oriya language without adding or omitting any information.\n\nGujarati Text:\nજેવા વાક્યના વચ્ચે કારણખાન રૂપ છે જે તેઓ તેના જાણકારને સફળતા વધુ રીતે ગૌઠીએ છે અને તે જ્ઞાનને વધુ પ્રોત્નો પાડી છે. તે બે સ્થાન"
+        },
+        {
+          "reward": -3.328125,
+          "clipped_at_max": false,
+          "text": "ાની વ્યવસાય રજૂલ થયો છે.\nTranslation: In such situations, people will become normal citizens, the rule of law will exist, there will be state power, corruption will disappear and judicial supervision will occur. Such a country would have an occupation for doing work.\nInput: અને જ્યાં આગળ આવું પોતાપણ"
+        }
+      ]
+    }
+  ]
+}

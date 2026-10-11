@@ -1,0 +1,20 @@
+{
+  "fixed": {
+    "zero_mean_within_each_group": true,
+    "unit_std_within_each_group": true,
+    "invariant_to_per_group_shift": true,
+    "constant_group_gives_zero_advantage": true,
+    "permutation_equivariant": true,
+    "grpo_on_policy_loss_is_minus_mean_adv": true,
+    "kl_zero_when_policy_equals_ref": true,
+    "dr_grpo_weights_by_length": true,
+    "truncated_rows_masked": true
+  },
+  "starter": {
+    "zero_mean_within_each_group": false,
+    "unit_std_within_each_group": false,
+    "invariant_to_per_group_shift": false,
+    "constant_group_gives_zero_advantage": false,
+    "permutation_equivariant": true
+  }
+}
