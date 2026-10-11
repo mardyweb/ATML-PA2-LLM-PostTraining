@@ -1,0 +1,122 @@
+{
+  "name": "beta_0.3",
+  "adapter": "/content/drive/MyDrive/ATML_PA2/ATML-PA2-LLM-PostTraining/outputs/task1_dpo/beta_0.3",
+  "beta": 0.3,
+  "seed": 6304,
+  "decoding": {
+    "temperature": 0.7,
+    "top_p": 0.9,
+    "do_sample": true
+  },
+  "max_generation_tokens": 256,
+  "heldout_standard": {
+    "num_pairs": 290,
+    "num_dropped_overlong_prompt": 10,
+    "preference_accuracy": 0.6137931034482759,
+    "margin_mean": 0.14017810870347353,
+    "margin_std": 0.523031883063592,
+    "dpo_loss_beta0.1": 0.6865034311415994,
+    "dpo_loss_beta0.3": 0.6753940628735849,
+    "frac_chosen_longer": 0.5310344827586206,
+    "longer_heuristic_accuracy": 0.5310344827586206,
+    "corr_margin_vs_length_diff": -0.07898244541359799
+  },
+  "heldout_length_stratified": {
+    "num_pairs": 237,
+    "num_dropped_overlong_prompt": 9,
+    "preference_accuracy": 0.5780590717299579,
+    "margin_mean": 0.09620430788913356,
+    "margin_std": 0.459455902966148,
+    "dpo_loss_beta0.1": 0.6886111937280506,
+    "dpo_loss_beta0.3": 0.6811773250298118,
+    "frac_chosen_longer": 0.4810126582278481,
+    "longer_heuristic_accuracy": 0.4810126582278481,
+    "corr_margin_vs_length_diff": -0.20295231720616966,
+    "strata": {
+      "length_matched": {
+        "n": 80,
+        "preference_accuracy": 0.575,
+        "margin_mean": 0.07530965656042099,
+        "mean_chosen_tokens": 121.85,
+        "mean_rejected_tokens": 122.4
+      },
+      "preferred_longer": {
+        "n": 78,
+        "preference_accuracy": 0.4230769230769231,
+        "margin_mean": -0.04067244896521935,
+        "mean_chosen_tokens": 221.26923076923077,
+        "mean_rejected_tokens": 105.25641025641026
+      },
+      "rejected_longer": {
+        "n": 79,
+        "preference_accuracy": 0.7341772151898734,
+        "margin_mean": 0.252507588154153,
+        "mean_chosen_tokens": 101.0379746835443,
+        "mean_rejected_tokens": 207.08860759493672
+      }
+    },
+    "stratum_label_key": "length_stratum"
+  },
+  "generation": {
+    "num_prompts": 294,
+    "reward_mean": 1.3391743095553652,
+    "reward_std": 1.1563260050079316,
+    "kl_token_mean": -0.00024543361150129034,
+    "kl_seq_sum_mean": -0.038057238451160845,
+    "length_tokens": {
+      "mean": 155.0612244897959,
+      "std": 103.71092244906183,
+      "median": 192.0,
+      "q1": 45.25,
+      "q3": 256.0,
+      "iqr": 210.75,
+      "p90": 256.0,
+      "n": 294
+    },
+    "length_words": {
+      "mean": 110.55102040816327,
+      "std": 76.1316156870589,
+      "median": 124.0,
+      "q1": 34.0,
+      "q3": 178.0,
+      "iqr": 144.0,
+      "p90": 202.7,
+      "n": 294
+    },
+    "truncation_rate": 0.42517006802721086,
+    "eos_rate": 0.5748299319727891,
+    "corr_reward_vs_length": -0.029054569874841597
+  },
+  "word_limit": {
+    "num_prompts": 10,
+    "samples_per_prompt": 4,
+    "num_scored": 40,
+    "compliance_rate": 0.525,
+    "words": {
+      "mean": 41.225,
+      "std": 19.160489946762844,
+      "median": 34.5,
+      "q1": 26.5,
+      "q3": 53.75,
+      "iqr": 27.25,
+      "p90": 70.5,
+      "n": 40
+    },
+    "mean_words_over_limit": 8.85,
+    "per_prompt_compliance": {
+      "wl01": 0.75,
+      "wl02": 0.25,
+      "wl03": 1.0,
+      "wl04": 0.75,
+      "wl05": 0.0,
+      "wl06": 1.0,
+      "wl07": 0.25,
+      "wl08": 0.25,
+      "wl09": 1.0,
+      "wl10": 0.0
+    },
+    "kl_token_mean": 0.00012424281234922258,
+    "reward_mean": 3.496435546875
+  },
+  "eval_wall_clock_s": 229.2
+}

@@ -1,0 +1,10 @@
+Standard and length-balanced runs train for one full epoch; the beta forks train on the first 600 pairs only (different budget). Preference accuracy is undefined for the SFT reference (margin is identically 0).
+
+| condition | train_pairs | optimizer_steps | beta | heldout_loss_own_beta | heldout_loss_beta0.1 | heldout_pref_acc | heldout_margin_mean | kl_per_token | kl_per_seq | rm_mean | rm_std | len_tok_mean | len_tok_std | len_tok_median | len_tok_iqr | truncation_rate | word_limit_compliance | train_wall_clock_s | train_peak_vram_gb |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| SFT / reference (no DPO) | 0 | 0 |  |  | 0.6931 |  | 0 | 0 | 0 | 1.389 | 1.164 | 156.3 | 103.6 | 194.5 | 210 | 0.4218 | 0.575 |  |  |
+| Standard DPO (1 epoch) | 1446 | 91 | 0.1 | 0.6739 | 0.6739 | 0.631 | 0.4522 | -2.727e-05 | -0.004289 | 1.309 | 1.187 | 157.3 | 103.9 | 203 | 210 | 0.4388 | 0.55 | 252.8 | 8.39 |
+| Short fork beta=0.03 | 581 | 37 | 0.03 | 0.691 | 0.6863 | 0.6069 | 0.1474 | -0.0002406 | -0.03718 | 1.341 | 1.141 | 154.6 | 103.8 | 187.5 | 213.2 | 0.4252 | 0.575 | 102.1 | 8.39 |
+| Short fork beta=0.1 | 581 | 37 | 0.1 | 0.6868 | 0.6868 | 0.5966 | 0.1356 | -0.0002654 | -0.04133 | 1.317 | 1.16 | 155.7 | 103.9 | 193.5 | 210.8 | 0.432 | 0.575 | 102.1 | 8.39 |
+| Short fork beta=0.3 | 581 | 37 | 0.3 | 0.6754 | 0.6865 | 0.6138 | 0.1402 | -0.0002454 | -0.03806 | 1.339 | 1.156 | 155.1 | 103.7 | 192 | 210.8 | 0.4252 | 0.525 | 103.4 | 8.39 |
+| Length-balanced DPO (1 epoch) | 1442 | 91 | 0.1 | 0.6744 | 0.6744 | 0.6276 | 0.514 | 0.002771 | 0.4328 | 1.37 | 1.162 | 156.2 | 105.3 | 211.5 | 216 | 0.4558 | 0.575 | 240 | 8.39 |

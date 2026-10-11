@@ -1,0 +1,33 @@
+{
+  "run_name": "beta_0.3",
+  "dataset": "data/dpo_standard_train.jsonl",
+  "num_pairs": 581,
+  "num_dropped_overlong": 19,
+  "epochs": 1,
+  "beta": 0.3,
+  "batch_size": 2,
+  "grad_accum_steps": 8,
+  "effective_batch_pairs": 16,
+  "optimizer_steps": 37,
+  "learning_rate": 2e-05,
+  "lr_schedule": "constant",
+  "weight_decay": 0.0,
+  "max_sequence_length": 768,
+  "max_grad_norm": 1.0,
+  "lora": {
+    "r": 8,
+    "alpha": 16,
+    "dropout": 0.05,
+    "target_modules": [
+      "q_proj",
+      "v_proj"
+    ]
+  },
+  "seed": 6304,
+  "dtype": "float16",
+  "fp16_grad_scaler": true,
+  "wall_clock_s_this_session": 103.4,
+  "peak_vram_gb_this_session": 8.39,
+  "resumed_from_step": null,
+  "adapter_path": "/content/drive/MyDrive/ATML_PA2/ATML-PA2-LLM-PostTraining/outputs/task1_dpo/beta_0.3"
+}

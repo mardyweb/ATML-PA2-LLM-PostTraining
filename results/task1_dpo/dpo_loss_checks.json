@@ -1,0 +1,24 @@
+{
+  "fixed": {
+    "identity_log2_beta0.03": true,
+    "identity_log2_beta0.1": true,
+    "identity_log2_beta0.3": true,
+    "matches_equation_beta0.03": true,
+    "matches_equation_beta0.1": true,
+    "matches_equation_beta0.3": true,
+    "chosen_up_lowers_loss": true,
+    "rejected_up_raises_loss": true,
+    "invariant_to_matched_shift": true
+  },
+  "starter": {
+    "identity_log2_beta0.03": false,
+    "identity_log2_beta0.1": false,
+    "identity_log2_beta0.3": false,
+    "matches_equation_beta0.03": false,
+    "matches_equation_beta0.1": false,
+    "matches_equation_beta0.3": false,
+    "chosen_up_lowers_loss": true,
+    "rejected_up_raises_loss": true,
+    "invariant_to_matched_shift": false
+  }
+}

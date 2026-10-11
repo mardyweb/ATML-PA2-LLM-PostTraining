@@ -1,0 +1,86 @@
+{
+  "name": "sft",
+  "adapter": "none (reference/SFT policy)",
+  "beta": 0.1,
+  "seed": 6304,
+  "decoding": {
+    "temperature": 0.7,
+    "top_p": 0.9,
+    "do_sample": true
+  },
+  "max_generation_tokens": 256,
+  "heldout_standard": {
+    "note": "policy is the reference: margin = 0 for every pair, DPO loss = log 2",
+    "preference_accuracy": NaN,
+    "margin_mean": 0.0,
+    "dpo_loss_beta0.1": 0.6931471805599453
+  },
+  "heldout_length_stratified": {
+    "note": "policy is the reference: margin = 0 for every pair, DPO loss = log 2",
+    "preference_accuracy": NaN,
+    "margin_mean": 0.0,
+    "dpo_loss_beta0.1": 0.6931471805599453
+  },
+  "generation": {
+    "num_prompts": 294,
+    "reward_mean": 1.3889452746125306,
+    "reward_std": 1.1635996954622498,
+    "kl_token_mean": 0.0,
+    "kl_seq_sum_mean": 0.0,
+    "length_tokens": {
+      "mean": 156.26190476190476,
+      "std": 103.55708986678799,
+      "median": 194.5,
+      "q1": 46.0,
+      "q3": 256.0,
+      "iqr": 210.0,
+      "p90": 256.0,
+      "n": 294
+    },
+    "length_words": {
+      "mean": 111.23469387755102,
+      "std": 76.14332185426065,
+      "median": 131.0,
+      "q1": 34.0,
+      "q3": 181.0,
+      "iqr": 147.0,
+      "p90": 202.0,
+      "n": 294
+    },
+    "truncation_rate": 0.4217687074829932,
+    "eos_rate": 0.5782312925170068,
+    "corr_reward_vs_length": 0.00747486548267629
+  },
+  "word_limit": {
+    "num_prompts": 10,
+    "samples_per_prompt": 4,
+    "num_scored": 40,
+    "compliance_rate": 0.575,
+    "words": {
+      "mean": 40.6,
+      "std": 19.54712255039089,
+      "median": 32.5,
+      "q1": 25.75,
+      "q3": 53.75,
+      "iqr": 28.0,
+      "p90": 75.0,
+      "n": 40
+    },
+    "mean_words_over_limit": 8.525,
+    "per_prompt_compliance": {
+      "wl01": 1.0,
+      "wl02": 0.25,
+      "wl03": 1.0,
+      "wl04": 0.75,
+      "wl05": 0.25,
+      "wl06": 1.0,
+      "wl07": 0.25,
+      "wl08": 0.25,
+      "wl09": 1.0,
+      "wl10": 0.0
+    },
+    "kl_token_mean": 0.0,
+    "reward_mean": 3.554638671875
+  },
+  "eval_wall_clock_s": 158.6
+}

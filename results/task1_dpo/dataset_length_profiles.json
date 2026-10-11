@@ -1,0 +1,62 @@
+{
+  "standard_train": {
+    "num_pairs": 1500,
+    "chosen_tokens_mean": 282.11466666666666,
+    "rejected_tokens_mean": 239.66466666666668,
+    "chosen_tokens_median": 235.5,
+    "rejected_tokens_median": 175.0,
+    "mean_length_diff_chosen_minus_rejected": 42.45,
+    "frac_chosen_longer": 0.5626666666666666,
+    "frac_rejected_longer": 0.422,
+    "frac_equal_length": 0.015333333333333332,
+    "median_length_ratio_chosen_over_rejected": 1.1123838162930562,
+    "strata_counts": {}
+  },
+  "standard_eval": {
+    "num_pairs": 300,
+    "chosen_tokens_mean": 274.4033333333333,
+    "rejected_tokens_mean": 243.75666666666666,
+    "chosen_tokens_median": 192.5,
+    "rejected_tokens_median": 172.0,
+    "mean_length_diff_chosen_minus_rejected": 30.64666666666667,
+    "frac_chosen_longer": 0.5333333333333333,
+    "frac_rejected_longer": 0.44333333333333336,
+    "frac_equal_length": 0.023333333333333334,
+    "median_length_ratio_chosen_over_rejected": 1.05,
+    "strata_counts": {}
+  },
+  "length_balanced_train": {
+    "num_pairs": 1500,
+    "chosen_tokens_mean": 156.85533333333333,
+    "rejected_tokens_mean": 151.692,
+    "chosen_tokens_median": 131.0,
+    "rejected_tokens_median": 131.0,
+    "mean_length_diff_chosen_minus_rejected": 5.163333333333333,
+    "frac_chosen_longer": 0.49133333333333334,
+    "frac_rejected_longer": 0.486,
+    "frac_equal_length": 0.02266666666666667,
+    "median_length_ratio_chosen_over_rejected": 1.0,
+    "strata_counts": {
+      "rejected_longer": 500,
+      "preferred_longer": 500,
+      "length_matched": 500
+    }
+  },
+  "length_stratified_eval": {
+    "num_pairs": 246,
+    "chosen_tokens_mean": 147.45528455284554,
+    "rejected_tokens_mean": 144.760162601626,
+    "chosen_tokens_median": 114.5,
+    "rejected_tokens_median": 113.5,
+    "mean_length_diff_chosen_minus_rejected": 2.6951219512195124,
+    "frac_chosen_longer": 0.483739837398374,
+    "frac_rejected_longer": 0.5,
+    "frac_equal_length": 0.016260162601626018,
+    "median_length_ratio_chosen_over_rejected": 0.9973544973544973,
+    "strata_counts": {
+      "rejected_longer": 82,
+      "preferred_longer": 82,
+      "length_matched": 82
+    }
+  }
+}
