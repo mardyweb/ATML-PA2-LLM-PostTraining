@@ -2,19 +2,19 @@ from __future__ import annotations
 
 import argparse
 
-from common.data import load_yaml, read_jsonl
-from common.models import load_policy, load_reward_model, load_tokenizer
+from common.data import load_yaml, repo_path
+from common.rl import evaluate_heldout
 
 
-def load_evaluation_bundle(config_path: str, adapter: str):
+def evaluate_ppo(config_path: str, adapter: str, name: str, num_prompts: int = 128, force: bool = False):
     cfg = load_yaml(config_path)
-    return {
-        "cfg": cfg,
-        "rows": read_jsonl(cfg["paths"]["rl_prompt_eval"]),
-        "tokenizer": load_tokenizer(cfg["base_model"]),
-        "policy": load_policy(cfg, adapter_path=adapter, trainable=False),
-        "reward": load_reward_model(cfg),
-    }
+    out_dir = repo_path(cfg["results_dir"]) / name
+    if (out_dir / "eval_summary.json").exists() and not force:
+        print(f"[{name}] already evaluated - skipping")
+        return None
+    print(f"[{name}] held-out evaluation of {adapter}", flush=True)
+    return evaluate_heldout(cfg, adapter, out_dir, num_prompts=num_prompts,
+                            max_new_tokens=int(cfg["eval_max_response_length"]))
 
 
 def main():
@@ -22,11 +22,10 @@ def main():
     ap.add_argument("--config", default="configs/ppo.yaml")
     ap.add_argument("--adapter", required=True)
     ap.add_argument("--name", default="standard")
+    ap.add_argument("--num-prompts", type=int, default=128)
+    ap.add_argument("--force", action="store_true")
     args = ap.parse_args()
-    load_evaluation_bundle(args.config, args.adapter)
-    raise NotImplementedError(
-        "TODO(student): implement the common held-out generation/evaluation protocol and save machine-readable metrics/examples."
-    )
+    evaluate_ppo(args.config, args.adapter, args.name, args.num_prompts, args.force)
 
 
 if __name__ == "__main__":

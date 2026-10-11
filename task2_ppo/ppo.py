@@ -44,16 +44,14 @@ def shaped_rewards(task_reward, policy_logp, ref_logp, response_mask, beta_kl):
 
 
 def ppo_policy_loss(new_logp, old_logp, advantage, mask, eps=0.2):
-    """Return PPO clipped policy loss and diagnostics.
-
-    Validate this starter implementation against the clipped surrogate in the assignment manual.
-    """
+    """Return PPO clipped policy loss and diagnostics."""
     ratio = torch.exp(new_logp - old_logp)
     surr1 = ratio * advantage
     surr2 = ratio.clamp(1.0 - eps, 1.0 + eps) * advantage
 
-    # Starter implementation: students must validate the clipping geometry carefully.
-    objective = torch.maximum(surr1, surr2)
+    # starter took the max here, which turns the bound into an optimistic one: big ratios are
+    # never capped. PPO uses the pessimistic min of the two surrogates (see check_ppo.py)
+    objective = torch.minimum(surr1, surr2)
 
     loss = -masked_mean(objective, mask)
     affected = ((ratio < (1.0 - eps)) | (ratio > (1.0 + eps))).float()

@@ -1,0 +1,22 @@
+{
+  "fixed": {
+    "ratio_one_gives_minus_mean_adv": true,
+    "pos_adv_high_ratio_capped": true,
+    "neg_adv_low_ratio_capped": true,
+    "pos_adv_low_ratio_keeps_gradient": true,
+    "matches_formula_eps0.05": true,
+    "matches_formula_eps0.2": true,
+    "matches_formula_eps0.5": true,
+    "gae_matches_naive": true,
+    "returns_equal_adv_plus_value": true
+  },
+  "starter": {
+    "ratio_one_gives_minus_mean_adv": true,
+    "pos_adv_high_ratio_capped": false,
+    "neg_adv_low_ratio_capped": false,
+    "pos_adv_low_ratio_keeps_gradient": false,
+    "matches_formula_eps0.05": false,
+    "matches_formula_eps0.2": false,
+    "matches_formula_eps0.5": false
+  }
+}

@@ -1,0 +1,32 @@
+{
+  "adapter": "checkpoints/ppo_midpoint_policy",
+  "num_prompts": 128,
+  "num_dropped_long_prompts": 35,
+  "max_new_tokens": 768,
+  "decoding": {
+    "temperature": 0.7,
+    "top_p": 0.9,
+    "do_sample": true
+  },
+  "seed": 6304,
+  "reward_mean": 1.7571561336517334,
+  "reward_std": 1.3684246881975917,
+  "reward_sem": 0.12095279707095048,
+  "reward_with_eos_penalty_mean": 1.7024686336517334,
+  "kl_token_mean": -1.0640600919562352e-05,
+  "kl_seq_sum_mean": -0.0030745516623937874,
+  "entropy_token_mean": 0.9708759393984682,
+  "length_tokens": {
+    "mean": 288.9453125,
+    "std": 259.2095951093966,
+    "median": 216.5,
+    "q1": 44.5,
+    "q3": 513.5,
+    "iqr": 469.0,
+    "n": 128
+  },
+  "truncation_rate": 0.0546875,
+  "eos_rate": 0.9453125,
+  "corr_reward_vs_length": 0.4276462977022711,
+  "eval_wall_clock_s": 332.8
+}
