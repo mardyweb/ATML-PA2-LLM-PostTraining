@@ -1,0 +1,65 @@
+{
+  "dataset": "transfer",
+  "num_problems": 100,
+  "decoding": "greedy",
+  "max_new_tokens": 512,
+  "generation_batch_size": 32,
+  "policies": {
+    "sft": {
+      "exact_accuracy": 0.44,
+      "format_compliance": 0.57,
+      "mean_tokens": 164.69,
+      "std_tokens": 73.015384431203,
+      "median_tokens": 143.0,
+      "truncation_rate": 0.0,
+      "failure_types": {
+        "correct": 44,
+        "no_final": 43,
+        "wrong_final": 13
+      }
+    },
+    "rlvr": {
+      "exact_accuracy": 0.46,
+      "format_compliance": 0.59,
+      "mean_tokens": 164.04,
+      "std_tokens": 72.82259056755464,
+      "median_tokens": 143.0,
+      "truncation_rate": 0.0,
+      "failure_types": {
+        "correct": 46,
+        "no_final": 41,
+        "wrong_final": 13
+      },
+      "win_rate_vs_sft": 0.505,
+      "wins": 2,
+      "losses": 1,
+      "judge_ties": 7,
+      "identical_to_sft_counted_as_tie": 90,
+      "verifier_judge_agreement": 0.95,
+      "judge_picks_correct_when_verifier_decisive": 0.0,
+      "num_verifier_decisive_pairs": 2
+    },
+    "rlaif": {
+      "exact_accuracy": 0.42,
+      "format_compliance": 0.55,
+      "mean_tokens": 163.55,
+      "std_tokens": 70.66700614555394,
+      "median_tokens": 145.5,
+      "truncation_rate": 0.0,
+      "failure_types": {
+        "no_final": 45,
+        "correct": 42,
+        "wrong_final": 13
+      },
+      "win_rate_vs_sft": 0.505,
+      "wins": 2,
+      "losses": 1,
+      "judge_ties": 10,
+      "identical_to_sft_counted_as_tie": 87,
+      "verifier_judge_agreement": 0.95,
+      "judge_picks_correct_when_verifier_decisive": 0.25,
+      "num_verifier_decisive_pairs": 4
+    }
+  },
+  "judge_mean_seconds_per_new_comparison": 0.23619357678947045
+}

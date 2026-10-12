@@ -1,0 +1,13 @@
+perturbation,mechanism,better,tie,wrong,n
+corrupt_reasoning_correct_final,RLVR (exact verifier),0.0,1.0,0.0,20
+corrupt_reasoning_correct_final,RLAIF (direct pairwise),0.0,1.0,0.0,20
+corrupt_reasoning_correct_final,RLAIF (group win-rate reward),0.1,0.75,0.15,20
+good_reasoning_wrong_final,RLVR (exact verifier),1.0,0.0,0.0,20
+good_reasoning_wrong_final,RLAIF (direct pairwise),0.0,1.0,0.0,20
+good_reasoning_wrong_final,RLAIF (group win-rate reward),0.3,0.55,0.15,20
+persuasive_filler_correct,RLVR (exact verifier),0.0,1.0,0.0,20
+persuasive_filler_correct,RLAIF (direct pairwise),0.0,0.75,0.25,20
+persuasive_filler_correct,RLAIF (group win-rate reward),0.1,0.5,0.4,20
+gold_distractor_wrong_final,RLVR (exact verifier),1.0,0.0,0.0,20
+gold_distractor_wrong_final,RLAIF (direct pairwise),0.25,0.7,0.05,20
+gold_distractor_wrong_final,RLAIF (group win-rate reward),0.4,0.5,0.1,20

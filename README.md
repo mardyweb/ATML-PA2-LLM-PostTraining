@@ -76,6 +76,7 @@ python -m task5_feedback.score_perturbations                # controlled diagnos
 python -m task5_feedback.evaluate_math --dataset gsm        # in-domain
 python -m task5_feedback.evaluate_math --dataset transfer   # SVAMP transfer
 python -m task5_feedback.compare_feedback
+python -m task5_feedback.check_judge_outputs              # raw judge text behind each A/B/TIE
 ```
 
 ## Where the results are
@@ -86,7 +87,7 @@ python -m task5_feedback.compare_feedback
 | 2 | `results/task2_ppo/table_ppo_standard.md`, `table_ppo_clipping_cached.md`, `table_ppo_clipping_forks.md`, `table_ppo_kl.md`, `figures/` |
 | 3 | `results/task3_grpo/table_grpo_standard.md`, `table_grpo_group_size.md`, `table_grpo_normalization.md`, `figures/` |
 | 4 | `results/task4_safety/safety_summary.md`, `category_label_distribution.md`, `audit_agreement.md`, `audit_pairs.csv`, `figures/` |
-| 5 | `results/task5_feedback/table_task5_policies.md`, `table_task5_diagnostics.md`, `figures/` |
+| 5 | `results/task5_feedback/table_task5_policies.md`, `table_task5_diagnostics.md`, `judge_format_check.md`, `figures/` |
 
 Per-run logs (training curves, prompt/data IDs, hyperparameters, wall-clock, peak VRAM, per-example
 generations and scores) sit next to these in one folder per run.

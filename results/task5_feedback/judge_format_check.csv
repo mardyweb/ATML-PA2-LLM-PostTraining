@@ -1,0 +1,6 @@
+source,comparisons,judge_said_A_or_B,judge_said_TIE,unparseable_counted_as_TIE,share_of_TIEs_that_are_parse_failures,exact_single_label_output,decisive_picks_first_shown,matches_cached_result
+diagnostics,200,0.14,0.86,0.0,0.0,0.965,0.25,1.0
+gsm_rlvr_vs_sft,62,0.0967741935483871,0.9032258064516129,0.0,0.0,0.967741935483871,0.6666666666666666,1.0
+gsm_rlaif_vs_sft,64,0.15625,0.84375,0.0,0.0,0.953125,0.6,1.0
+transfer_rlvr_vs_sft,10,0.3,0.7,0.0,0.0,0.7,1.0,1.0
+transfer_rlaif_vs_sft,13,0.23076923076923078,0.7692307692307693,0.0,0.0,0.8461538461538461,1.0,1.0

@@ -1,0 +1,68 @@
+{
+  "dataset": "gsm",
+  "num_problems": 300,
+  "decoding": "greedy",
+  "max_new_tokens": 512,
+  "generation_batch_size": 32,
+  "policies": {
+    "sft": {
+      "exact_accuracy": 0.28,
+      "format_compliance": 0.35,
+      "mean_tokens": 275.86,
+      "std_tokens": 88.04924359504096,
+      "median_tokens": 261.0,
+      "truncation_rate": 0.02,
+      "failure_types": {
+        "no_final": 189,
+        "correct": 84,
+        "wrong_final": 21,
+        "no_final_truncated": 6
+      }
+    },
+    "rlvr": {
+      "exact_accuracy": 0.2966666666666667,
+      "format_compliance": 0.37,
+      "mean_tokens": 276.1166666666667,
+      "std_tokens": 88.24378888328144,
+      "median_tokens": 260.5,
+      "truncation_rate": 0.023333333333333334,
+      "failure_types": {
+        "no_final": 182,
+        "correct": 89,
+        "wrong_final": 22,
+        "no_final_truncated": 7
+      },
+      "win_rate_vs_sft": 0.5,
+      "wins": 3,
+      "losses": 3,
+      "judge_ties": 56,
+      "identical_to_sft_counted_as_tie": 238,
+      "verifier_judge_agreement": 0.95,
+      "judge_picks_correct_when_verifier_decisive": 0.07692307692307693,
+      "num_verifier_decisive_pairs": 13
+    },
+    "rlaif": {
+      "exact_accuracy": 0.28,
+      "format_compliance": 0.36,
+      "mean_tokens": 274.30333333333334,
+      "std_tokens": 85.82457406789352,
+      "median_tokens": 261.0,
+      "truncation_rate": 0.016666666666666666,
+      "failure_types": {
+        "no_final": 187,
+        "correct": 84,
+        "wrong_final": 24,
+        "no_final_truncated": 5
+      },
+      "win_rate_vs_sft": 0.49,
+      "wins": 2,
+      "losses": 8,
+      "judge_ties": 54,
+      "identical_to_sft_counted_as_tie": 236,
+      "verifier_judge_agreement": 0.94,
+      "judge_picks_correct_when_verifier_decisive": 0.0,
+      "num_verifier_decisive_pairs": 10
+    }
+  },
+  "judge_mean_seconds_per_new_comparison": 0.2609688302291602
+}

@@ -1,0 +1,207 @@
+{
+  "num_problems": 20,
+  "pairs_per_problem": 4,
+  "better_response_in_every_pair": "clean_correct",
+  "rlaif_group_reward_definition": "(wins + 0.5 ties) / (K - 1) over the 5 variants of a problem",
+  "per_perturbation": {
+    "corrupt_reasoning_correct_final": {
+      "rlvr_pref": {
+        "better": 0.0,
+        "tie": 1.0,
+        "wrong": 0.0,
+        "n": 20
+      },
+      "rlaif_pairwise_pref": {
+        "better": 0.0,
+        "tie": 1.0,
+        "wrong": 0.0,
+        "n": 20
+      },
+      "rlaif_group_pref": {
+        "better": 0.1,
+        "tie": 0.75,
+        "wrong": 0.15,
+        "n": 20
+      }
+    },
+    "good_reasoning_wrong_final": {
+      "rlvr_pref": {
+        "better": 1.0,
+        "tie": 0.0,
+        "wrong": 0.0,
+        "n": 20
+      },
+      "rlaif_pairwise_pref": {
+        "better": 0.0,
+        "tie": 1.0,
+        "wrong": 0.0,
+        "n": 20
+      },
+      "rlaif_group_pref": {
+        "better": 0.3,
+        "tie": 0.55,
+        "wrong": 0.15,
+        "n": 20
+      }
+    },
+    "persuasive_filler_correct": {
+      "rlvr_pref": {
+        "better": 0.0,
+        "tie": 1.0,
+        "wrong": 0.0,
+        "n": 20
+      },
+      "rlaif_pairwise_pref": {
+        "better": 0.0,
+        "tie": 0.75,
+        "wrong": 0.25,
+        "n": 20
+      },
+      "rlaif_group_pref": {
+        "better": 0.1,
+        "tie": 0.5,
+        "wrong": 0.4,
+        "n": 20
+      }
+    },
+    "gold_distractor_wrong_final": {
+      "rlvr_pref": {
+        "better": 1.0,
+        "tie": 0.0,
+        "wrong": 0.0,
+        "n": 20
+      },
+      "rlaif_pairwise_pref": {
+        "better": 0.25,
+        "tie": 0.7,
+        "wrong": 0.05,
+        "n": 20
+      },
+      "rlaif_group_pref": {
+        "better": 0.4,
+        "tie": 0.5,
+        "wrong": 0.1,
+        "n": 20
+      }
+    }
+  },
+  "summary": {
+    "rlvr_pref": {
+      "S_reason": 0.0,
+      "S_reason_detail": {
+        "better": 0.0,
+        "tie": 1.0,
+        "wrong": 0.0,
+        "n": 20
+      },
+      "S_outcome": 1.0,
+      "S_outcome_detail": {
+        "better": 1.0,
+        "tie": 0.0,
+        "wrong": 0.0,
+        "n": 20
+      },
+      "S_outcome_pooled_with_distractor": 1.0,
+      "S_outcome_pooled_detail": {
+        "better": 1.0,
+        "tie": 0.0,
+        "wrong": 0.0,
+        "n": 40
+      },
+      "filler_detail": {
+        "better": 0.0,
+        "tie": 1.0,
+        "wrong": 0.0,
+        "n": 20
+      }
+    },
+    "rlaif_pairwise_pref": {
+      "S_reason": 0.0,
+      "S_reason_detail": {
+        "better": 0.0,
+        "tie": 1.0,
+        "wrong": 0.0,
+        "n": 20
+      },
+      "S_outcome": 0.0,
+      "S_outcome_detail": {
+        "better": 0.0,
+        "tie": 1.0,
+        "wrong": 0.0,
+        "n": 20
+      },
+      "S_outcome_pooled_with_distractor": 0.125,
+      "S_outcome_pooled_detail": {
+        "better": 0.125,
+        "tie": 0.85,
+        "wrong": 0.025,
+        "n": 40
+      },
+      "filler_detail": {
+        "better": 0.0,
+        "tie": 0.75,
+        "wrong": 0.25,
+        "n": 20
+      }
+    },
+    "rlaif_group_pref": {
+      "S_reason": 0.1,
+      "S_reason_detail": {
+        "better": 0.1,
+        "tie": 0.75,
+        "wrong": 0.15,
+        "n": 20
+      },
+      "S_outcome": 0.3,
+      "S_outcome_detail": {
+        "better": 0.3,
+        "tie": 0.55,
+        "wrong": 0.15,
+        "n": 20
+      },
+      "S_outcome_pooled_with_distractor": 0.35,
+      "S_outcome_pooled_detail": {
+        "better": 0.35,
+        "tie": 0.525,
+        "wrong": 0.125,
+        "n": 40
+      },
+      "filler_detail": {
+        "better": 0.1,
+        "tie": 0.5,
+        "wrong": 0.4,
+        "n": 20
+      }
+    }
+  },
+  "verifier_rows_checked_against_expected": 100,
+  "verifier_matches_expected_exact_reward": true,
+  "verifier_mismatches": [],
+  "mean_reward_by_variant": {
+    "clean_correct": {
+      "rlvr_reward": 1.0,
+      "rlaif_group_reward": 0.49375,
+      "mean_words": 49.7
+    },
+    "corrupt_reasoning_correct_final": {
+      "rlvr_reward": 1.0,
+      "rlaif_group_reward": 0.5,
+      "mean_words": 49.7
+    },
+    "good_reasoning_wrong_final": {
+      "rlvr_reward": 0.0,
+      "rlaif_group_reward": 0.475,
+      "mean_words": 49.7
+    },
+    "persuasive_filler_correct": {
+      "rlvr_reward": 1.0,
+      "rlaif_group_reward": 0.5875,
+      "mean_words": 59.7
+    },
+    "gold_distractor_wrong_final": {
+      "rlvr_reward": 0.0,
+      "rlaif_group_reward": 0.44375,
+      "mean_words": 17.0
+    }
+  }
+}
