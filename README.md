@@ -1,141 +1,116 @@
 # ATML PA2 - LLM Post-Training
 
-<!-- FINAL_STUDENT_SETUP -->
+Implementation of all five experimental tasks of ATML PA2 (DPO, PPO, GRPO, safety calibration,
+RLVR vs RLAIF) on top of the course starter repository. Every number in the report comes from a
+file under `results/` written by one of the commands below.
 
-## Quick start
+## Setup
 
 ```bash
-git clone https://github.com/AbDu11aHHH/ATML-PA2-LLM-PostTraining.git
+git clone <this repository>
 cd ATML-PA2-LLM-PostTraining
 python -m pip install -r requirements.txt
-python -m scripts.download_assets
+python -m scripts.download_assets      # pinned course assets (revision 0b350481fb03f5525a35bcdec4131bd4fe487f98)
 python -m scripts.validate_assets
-```
-
-The fixed datasets, cached diagnostics, and supplied
-continuation checkpoints are downloaded from:
-
-https://huggingface.co/datasets/AbDu11aHHH/ATML-PA2-assets
-
-Pinned release revision:
-
-`0b350481fb03f5525a35bcdec4131bd4fe487f98`
-
----
-# ATML PA2 - LLM Post-Training
-
-This is the **student starter repository** for ATML PA2. The released code is intentionally incomplete: Tasks 1-3 provide model/data loading, objective helpers, checkpoint restoration, and experiment entry points, but **you must implement the training loops and ablation orchestration yourself**. Each of Tasks 1-3 also contains one deliberate algorithmic defect in its core objective code; identifying and correcting these defects is part of validating your implementation.
-
-Task 4 supplies the fixed AI safety judge and response-generation utilities, but you must write the evaluation/aggregation code. Task 5 supplies the exact RLVR verifier, the fixed pairwise AI judge used for RLAIF evaluation, and data/model loaders; you must implement the requested evaluation and analysis.
-
-## 1. Clone and install
-
-```bash
-git clone https://github.com/COURSE_ORG/ATML-PA2-LLM-PostTraining.git
-cd ATML-PA2-LLM-PostTraining
-python -m pip install -r requirements.txt
-```
-
-## 2. Download the course assets
-
-The large course-created checkpoints and fixed data are distributed as a GitHub Release asset rather than normal Git files. After cloning, run:
-
-```bash
-python -m scripts.download_assets
-python -m scripts.validate_assets
-```
-
-If your instructor provides a direct asset URL separately, use:
-
-```bash
-python -m scripts.download_assets --url '<ASSET_URL>'
-```
-
-Public base/reward/judge models are downloaded from Hugging Face at runtime and are **not** included in the course asset archive.
-
-The installer also materializes the fixed 100-example Task 5 transfer set from the official SVAMP challenge-set source if it is not already present. The tiny Task 1 word-limit prompt set is tracked directly in this repository.
-
-## 3. Environment check
-
-```bash
 python -m scripts.check_environment
 ```
 
-Run commands from the repository root. The reference environment used to prepare the release pins Transformers 4.57.1, TRL 0.27.2, PEFT 0.17.1, and Tokenizers 0.22.1.
+All commands are run from the repository root. Experiments were run on a single A100 40GB
+(Google Colab). Downloaded data, checkpoints and trained adapters (`data/`, `cached/`,
+`checkpoints/`, `outputs/`) are git-ignored; `results/` holds the small JSON/JSONL/CSV logs,
+tables and figures. Each step skips work whose outputs already exist, so a command can simply be
+rerun after an interruption.
 
-## 4. Supplied course checkpoints
-
-After `download_assets`, these directories should exist:
-
-```text
-checkpoints/ppo_midpoint_policy/
-checkpoints/ppo_midpoint_value/
-checkpoints/grpo_midpoint_policy/
-checkpoints/rlvr_policy/
-checkpoints/rlaif_policy/
-```
-
-PPO and GRPO begin from the supplied continuation checkpoints. RLVR and RLAIF are supplied frozen evaluation policies; students do not retrain them.
-
-The PPO value checkpoint is intentionally released as the exact staff midpoint state, including its imperfect held-out value calibration. Treat critic behavior as an analysis variable rather than assuming a perfect baseline, and start every PPO fork from the identical supplied policy/value state. The default continuation generation cap is 512 tokens for feasibility; frozen evaluation uses the larger cap specified in `configs/ppo.yaml`.
-
-## 5. Task entry points
-
-### Task 1 - DPO
+## Task 1 - DPO (`task1_dpo/`)
 
 ```bash
-python -m task1_dpo.train --config configs/dpo.yaml --run-name standard
-python -m task1_dpo.evaluate --config configs/dpo.yaml --adapter outputs/task1_dpo/standard --name standard
-python -m task1_dpo.ablate_beta --config configs/dpo.yaml
-python -m task1_dpo.analyze_length --config configs/dpo.yaml
+python -m task1_dpo.check_dpo_loss                                        # validates the fixed objective
+python -m task1_dpo.train --run-name standard                              # 1 epoch, standard set
+python -m task1_dpo.evaluate --adapter none --name sft                     # reference / SFT baseline
+python -m task1_dpo.evaluate --adapter outputs/task1_dpo/standard --name standard
+python -m task1_dpo.ablate_beta                                            # beta 0.03 / 0.10 / 0.30 short runs
+python -m task1_dpo.analyze_length                                         # length-balanced run + data profiles
+python -m task1_dpo.summarize                                              # tables, figures, examples
 ```
 
-### Task 2 - PPO
+## Task 2 - PPO (`task2_ppo/`)
 
 ```bash
-python -m task2_ppo.continue_train --config configs/ppo.yaml --run-name standard
-python -m task2_ppo.evaluate --config configs/ppo.yaml --adapter outputs/task2_ppo/standard --name standard
-python -m task2_ppo.analyze_clipping --config configs/ppo.yaml
-python -m task2_ppo.ablate_kl --config configs/ppo.yaml
+python -m task2_ppo.check_ppo
+python -m task2_ppo.continue_train --run-name standard                     # 20 updates from the midpoint
+python -m task2_ppo.evaluate --adapter checkpoints/ppo_midpoint_policy --name midpoint
+python -m task2_ppo.evaluate --adapter outputs/task2_ppo/standard --name standard
+python -m task2_ppo.analyze_clipping                                       # cached-batch study + eps forks
+python -m task2_ppo.ablate_kl                                              # kl_beta forks
+python -m task2_ppo.summarize
 ```
 
-### Task 3 - GRPO
+## Task 3 - GRPO (`task3_grpo/`)
 
 ```bash
-python -m task3_grpo.continue_train --config configs/grpo.yaml --run-name standard
-python -m task3_grpo.evaluate --config configs/grpo.yaml --adapter outputs/task3_grpo/standard --name standard
-python -m task3_grpo.analyze_group_size --config configs/grpo.yaml
-python -m task3_grpo.compare_normalization --config configs/grpo.yaml
+python -m task3_grpo.check_grpo
+python -m task3_grpo.analyze_group_size                                    # K = 2/4/8 on the supplied cache
+python -m task3_grpo.continue_train --run-name standard                    # 20 updates from the midpoint
+python -m task3_grpo.evaluate --adapter checkpoints/grpo_midpoint_policy --name midpoint
+python -m task3_grpo.evaluate --adapter outputs/task3_grpo/standard --name standard
+python -m task3_grpo.compare_normalization                                 # GRPO vs Dr. GRPO forks
+python -m task3_grpo.summarize
 ```
 
-### Task 4 - Safety calibration
+## Task 4 - Safety calibration (`task4_safety/`)
 
-The judge loader/parser are supplied. You must implement the requested generation aggregation and evaluation.
+Needs the standard adapters from Tasks 1-3.
 
 ```bash
-python -m task4_safety.generate_responses --config configs/feedback.yaml
-python -m task4_safety.judge_responses --config configs/feedback.yaml
-python -m task4_safety.make_audit_sheet --config configs/feedback.yaml
-python -m task4_safety.evaluate_safety --config configs/feedback.yaml
+python -m task4_safety.generate_responses      # SFT / DPO / PPO / GRPO on all 450 XSTest prompts
+python -m task4_safety.judge_responses         # supplied AI judge, one response at a time
+python -m task4_safety.make_audit_sheet        # blind sheet: fixed 60 prompts x 4 policies = 240 pairs
+# manual labels -> results/task4_safety/manual_audit_labels.csv
+python -m task4_safety.evaluate_safety
 ```
 
-### Task 5 - RLVR vs RLAIF
-
-The exact verifier and pairwise AI judge are supplied; you implement the evaluation/analysis.
+## Task 5 - RLVR vs RLAIF (`task5_feedback/`)
 
 ```bash
-python -m task5_feedback.evaluate_math --config configs/feedback.yaml --dataset gsm
-python -m task5_feedback.score_perturbations --config configs/feedback.yaml
-python -m task5_feedback.evaluate_math --config configs/feedback.yaml --dataset transfer
-python -m task5_feedback.compare_feedback --config configs/feedback.yaml
+python -m task5_feedback.score_perturbations                # controlled diagnostic set
+python -m task5_feedback.evaluate_math --dataset gsm        # in-domain
+python -m task5_feedback.evaluate_math --dataset transfer   # SVAMP transfer
+python -m task5_feedback.compare_feedback
 ```
 
-## 6. Reproducibility rules
+## Where the results are
 
-- Do not alter course-provided data, cached rollouts, or supplied checkpoints.
-- Start every short fork from the **same supplied midpoint checkpoint**.
-- Keep prompt IDs, generated-token/update budgets, seed, and evaluation procedure matched across ablations.
-- Commit your code, configs, small JSON/CSV logs, and figures. Do not commit downloaded checkpoints, raw course assets, or model caches.
-- Record peak VRAM and wall-clock time for the standard PPO and GRPO continuations.
+| Task | Main outputs |
+|---|---|
+| 1 | `results/task1_dpo/table_dpo_summary.md`, `table_length_strata.md`, `table_length_behaviour.md`, `table_data_used.md`, `figures/`, `qualitative_candidates.md` |
+| 2 | `results/task2_ppo/table_ppo_standard.md`, `table_ppo_clipping_cached.md`, `table_ppo_clipping_forks.md`, `table_ppo_kl.md`, `figures/` |
+| 3 | `results/task3_grpo/table_grpo_standard.md`, `table_grpo_group_size.md`, `table_grpo_normalization.md`, `figures/` |
+| 4 | `results/task4_safety/safety_summary.md`, `category_label_distribution.md`, `audit_agreement.md`, `audit_pairs.csv`, `figures/` |
+| 5 | `results/task5_feedback/table_task5_policies.md`, `table_task5_diagnostics.md`, `figures/` |
 
-See the assignment manual for the required experiments, metrics, and report questions.
+Per-run logs (training curves, prompt/data IDs, hyperparameters, wall-clock, peak VRAM, per-example
+generations and scores) sit next to these in one folder per run.
+
+## Fixes to the starter code
+
+- `task1_dpo/dpo.py`: the logit used `policy_margin + ref_margin`; DPO needs `policy_margin - ref_margin`.
+- `task2_ppo/ppo.py`: the clipped surrogate used `torch.maximum`; PPO takes the minimum.
+- `task3_grpo/grpo.py`: advantages were normalised over the whole batch; they are now normalised within each prompt's group.
+
+Each fix has a CPU check script (`check_dpo_loss`, `check_ppo`, `check_grpo`) that passes for the
+fixed version and fails for the original.
+
+## Implementation notes
+
+The task READMEs (`task*/README.md`) list the evaluation protocols and the choices that should be
+read alongside the numbers, in particular: DPO pairs whose prompt alone exceeds 768 tokens are
+dropped (counts and IDs in `results/task1_dpo/dataset_length_profiles.json`); RL prompts longer than
+256 tokens are skipped instead of truncated; entropy is the full next-token-distribution entropy;
+identical policy/SFT math responses count as judge ties; the safety audit labels identical
+(prompt, response) texts once and reports agreement over all 240 pairs.
+
+## Attribution
+
+Built on the ATML PA2 course starter repository (configs, `common/` helpers except `common/rl.py`,
+supplied judges, verifier, loaders and checkpoints). Parts of the implementation were written with
+help from an AI coding assistant, as allowed by the course policy; no other external code was reused.

@@ -85,7 +85,8 @@ def main():
             "beta": b if m else np.nan,
             "heldout_loss_own_beta": h.get(f"dpo_loss_beta{b:g}") if m else np.nan,
             f"heldout_loss_beta{float(cfg['beta']):g}": h.get(f"dpo_loss_beta{float(cfg['beta']):g}"),
-            "heldout_pref_acc": h["preference_accuracy"] if m else np.nan,
+            # reference policy: every margin is exactly 0, so accuracy (m > 0) is 0 by definition
+            "heldout_pref_acc": h["preference_accuracy"] if m else 0.0,
             "heldout_margin_mean": h["margin_mean"],
             "kl_per_token": g.get("kl_token_mean"),
             "kl_per_seq": g.get("kl_seq_sum_mean"),
@@ -101,29 +102,101 @@ def main():
             "train_peak_vram_gb": m.get("peak_vram_gb_this_session") if m else np.nan,
         })
     t1 = pd.DataFrame(rows)
+    prof = _load(res / "dataset_length_profiles.json") or {}
     if len(t1):
         t1.to_csv(res / "table_dpo_summary.csv", index=False)
+        fork_n = prof.get("beta_fork_subset", {}).get("num_pairs_used")
         (res / "table_dpo_summary.md").write_text(
-            "Standard and length-balanced runs train for one full epoch; the beta forks train on the first "
-            f"{cfg['short_ablation_examples']} pairs only (different budget). Preference accuracy is undefined "
-            "for the SFT reference (margin is identically 0).\n\n" + _md(t1) + "\n")
+            "Different training budgets: the standard and length-balanced runs train for one full epoch on their files; "
+            f"the beta forks train for one pass over the first {cfg['short_ablation_examples']} rows of the standard file"
+            + (f" ({fork_n} pairs after dropping prompts that do not fit in {cfg['max_sequence_length']} tokens)" if fork_n else "")
+            + ". For the SFT reference policy every margin is exactly 0, so its held-out accuracy (m > 0) is 0 and its loss "
+            "is log 2 by definition. KL is the sampled-response estimator (log pi - log ref on the sampled tokens), pooled "
+            "over all response tokens (kl_per_token, the course sampled_kl convention); kl_per_seq is the per-sequence sum."
+            " Wall-clock/VRAM are for the final (uninterrupted) training session.\n\n" + _md(t1) + "\n")
         print("  wrote", res / "table_dpo_summary.csv")
 
-    # per-stratum table
+    # which pairs were actually used (prompts that don't fit in max_sequence_length are dropped)
+    if prof:
+        drows = []
+        for split, v in prof.items():
+            drows.append({"split": split, "rows_in_file": v["rows_in_file"], "pairs_used": v["num_pairs_used"],
+                          "dropped_overlong_prompt": v["num_dropped_overlong_prompt"],
+                          "strata_used": " ".join(f"{k}={n}" for k, n in v["strata_counts_used"].items()),
+                          "strata_dropped": " ".join(f"{k}={n}" for k, n in v["strata_counts_dropped"].items()),
+                          "frac_chosen_longer": v["frac_chosen_longer"],
+                          "mean_len_diff_chosen_minus_rejected": v["mean_length_diff_chosen_minus_rejected"]})
+        dt = pd.DataFrame(drows)
+        dt.to_csv(res / "table_data_used.csv", index=False)
+        trunc = "\n".join(f"- {split}: " + ", ".join(f"{k}: chosen {t['chosen']:.2f} / rejected {t['rejected']:.2f}"
+                                                       for k, t in v["truncated_at_max_len"].items())
+                            for split, v in prof.items())
+        (res / "table_data_used.md").write_text(
+            f"Pairs whose prompt alone does not fit in max_sequence_length={cfg['max_sequence_length']} tokens are dropped "
+            "(the course encode_prompt_response cannot encode them). Dropped IDs are in dataset_length_profiles.json. "
+            "Length statistics are on the pairs used.\n\n" + _md(dt) +
+            "\n\nFraction of used pairs whose response is cut at max_sequence_length:\n\n" + trunc + "\n")
+        print("  wrote", res / "table_data_used.md")
+
+    # per-stratum table, with bootstrap CIs
+    def stratum_order(name):
+        n = str(name).lower()
+        return 0 if "prefer" in n or "chosen" in n else 2 if "reject" in n else 1
+
+    rng = np.random.default_rng(int(cfg["seed"]))
     strata_rows = []
-    for key in ("sft", "standard", "length_balanced"):
-        s = S.get(key)
-        if s is None or key == "sft":
-            continue
-        for st, v in s["heldout_length_stratified"].get("strata", {}).items():
-            strata_rows.append({"model": key, "stratum": st, "n": v["n"], "pref_acc": v["preference_accuracy"],
-                                "margin_mean": v["margin_mean"], "mean_chosen_tokens": v["mean_chosen_tokens"],
-                                "mean_rejected_tokens": v["mean_rejected_tokens"]})
+    for key in ("standard", "length_balanced"):
+        recs = _jsonl(res / key / "pairs_length_eval.jsonl")
+        for st in sorted({r["stratum"] for r in recs}, key=stratum_order):
+            m = np.array([r["margin"] for r in recs if r["stratum"] == st])
+            acc = (m > 0).astype(float)
+            boots = [rng.choice(acc, size=len(acc), replace=True).mean() for _ in range(2000)]
+            sub = [r for r in recs if r["stratum"] == st]
+            strata_rows.append({
+                "model": key, "stratum": st, "n": len(m), "pref_acc": float(acc.mean()),
+                "acc_ci_low": float(np.percentile(boots, 2.5)), "acc_ci_high": float(np.percentile(boots, 97.5)),
+                f"dpo_loss_beta{float(cfg['beta']):g}": float(np.mean(np.logaddexp(0, -float(cfg["beta"]) * m))),
+                "margin_mean": float(m.mean()),
+                "mean_chosen_tokens": float(np.mean([r["chosen_tokens_full"] for r in sub])),
+                "mean_rejected_tokens": float(np.mean([r["rejected_tokens_full"] for r in sub])),
+            })
     t2 = pd.DataFrame(strata_rows)
     if len(t2):
         t2.to_csv(res / "table_length_strata.csv", index=False)
-        (res / "table_length_strata.md").write_text(_md(t2) + "\n")
+        ms, mb = M.get("standard"), M.get("length_balanced")
+        budget = ""
+        if ms and mb:
+            budget = (f"Training budgets differ: standard DPO saw {ms['num_pairs']} pairs ({ms['optimizer_steps']} steps), "
+                      f"length-balanced DPO {mb['num_pairs']} pairs ({mb['optimizer_steps']} steps), both one epoch. ")
+        (res / "table_length_strata.md").write_text(
+            budget + "Held-out preference accuracy per length stratum on the length-stratified eval file, with 95% "
+            "bootstrap intervals (2000 resamples).\n\n" + _md(t2) + "\n")
         print("  wrote", res / "table_length_strata.csv")
+
+    # generated length and word-limit compliance on the common prompt set, plus held-out length
+    lrows = []
+    for key in ("sft", "standard", "length_balanced"):
+        s_ = S.get(key)
+        if not s_ or "word_limit" not in s_:
+            continue
+        wl = _jsonl(res / key / "word_limit_generations.jsonl")
+        tok = np.array([r["response_tokens"] for r in wl], float)
+        g = s_["generation"]["length_tokens"]
+        lrows.append({
+            "model": key, "word_limit_compliance": s_["word_limit"]["compliance_rate"],
+            "wl_words_mean": s_["word_limit"]["words"]["mean"], "wl_words_std": s_["word_limit"]["words"]["std"],
+            "wl_tokens_mean": float(tok.mean()) if tok.size else np.nan, "wl_tokens_std": float(tok.std()) if tok.size else np.nan,
+            "wl_mean_words_over_limit": s_["word_limit"]["mean_words_over_limit"],
+            "heldout_tokens_mean": g["mean"], "heldout_tokens_std": g["std"], "heldout_tokens_iqr": g["iqr"],
+        })
+    if lrows:
+        lt = pd.DataFrame(lrows)
+        lt.to_csv(res / "table_length_behaviour.csv", index=False)
+        (res / "table_length_behaviour.md").write_text(
+            "Generated length and explicit word-limit compliance on the common word-limit prompt set (10 prompts x "
+            "4 samples, course parse_word_limit / word_limit_compliance), plus generated length on the held-out "
+            "prompts. Same decoding for every model.\n\n" + _md(lt) + "\n")
+        print("  wrote", res / "table_length_behaviour.md")
 
     # beta sweep
     have_b = [b for b in betas if S.get(f"beta_{b:g}") and "generation" in S[f"beta_{b:g}"]]
@@ -194,10 +267,13 @@ def main():
         x = np.arange(len(strata))
         w = 0.38
         for i, m in enumerate(models):
-            vals = [t2[(t2.model == m) & (t2.stratum == s)]["pref_acc"].mean() for s in strata]
-            bars = axes[0].bar(x + (i - (len(models) - 1) / 2) * w, vals, w * 0.92, color=colors[m], label=labels[m])
-            for b_, v in zip(bars, vals):
-                axes[0].text(b_.get_x() + b_.get_width() / 2, v + 0.01, f"{v:.2f}", ha="center", va="bottom", fontsize=7, color=INK2)
+            sel = [t2[(t2.model == m) & (t2.stratum == s)].iloc[0] for s in strata]
+            vals = [r["pref_acc"] for r in sel]
+            err = [[r["pref_acc"] - r["acc_ci_low"] for r in sel], [r["acc_ci_high"] - r["pref_acc"] for r in sel]]
+            bars = axes[0].bar(x + (i - (len(models) - 1) / 2) * w, vals, w * 0.92, color=colors[m], label=labels[m],
+                               yerr=err, capsize=2, error_kw={"linewidth": 0.8, "ecolor": INK2})
+            for b_, v, hi in zip(bars, vals, err[1]):
+                axes[0].text(b_.get_x() + b_.get_width() / 2, v + hi + 0.01, f"{v:.2f}", ha="center", va="bottom", fontsize=7, color=INK2)
         axes[0].set_xticks(x)
         axes[0].set_xticklabels(strata, fontsize=8)
         axes[0].set_ylim(0, 1.18)

@@ -1,0 +1,6 @@
+split,rows_in_file,pairs_used,dropped_overlong_prompt,strata_used,strata_dropped,frac_chosen_longer,mean_len_diff_chosen_minus_rejected
+standard_train,1500,1446,54,all=1446,all=54,0.5712309820193637,45.905255878284926
+beta_fork_subset,600,581,19,all=581,all=19,0.576592082616179,52.26161790017212
+standard_eval,300,290,10,all=290,all=10,0.5310344827586206,29.044827586206896
+length_balanced_train,1500,1442,58,rejected_longer=482 length_matched=482 preferred_longer=478,preferred_longer=22 rejected_longer=18 length_matched=18,0.49029126213592233,4.728155339805825
+length_stratified_eval,246,237,9,rejected_longer=79 preferred_longer=78 length_matched=80,preferred_longer=4 rejected_longer=3 length_matched=2,0.4810126582278481,2.6455696202531644

@@ -34,5 +34,11 @@ of a prompt's mean cached reward (hard = lowest).
 `max_completion_length`). Advantage normalization is unchanged in both, so only the length
 normalization differs.
 
-**Held-out evaluation** is the shared protocol in `common/rl.py` (128 eval prompts, seed 6304,
+**Held-out evaluation** is the shared protocol in `common/rl.py` (first 128 eval prompts that fit in 256 prompt tokens, seed 6304,
 temperature 0.7, top-p 0.9), with a 768-token cap to match the PPO evaluation.
+
+**Notes.** Entropy is the full next-token distribution entropy (see the Task 2 README); in the
+training log it is averaged per completion then across the K completions, while held-out entropy is
+pooled over tokens. Prompts longer than 256 tokens are skipped, as in Task 2. The standard run also
+computes one extra backward pass per completion for the gradient-norm diagnostic, so its wall-clock
+time includes that overhead. Dropout is off during updates, as in Task 2.

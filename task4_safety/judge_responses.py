@@ -8,7 +8,8 @@ from pathlib import Path
 import torch
 from transformers import AutoTokenizer, AutoModelForCausalLM, BitsAndBytesConfig
 
-from common.data import load_yaml, read_jsonl
+from common.data import load_yaml, read_jsonl, repo_path
+from common.logging_utils import append_jsonl, wall_timer
 from common.models import resolve_dtype
 
 LABELS = {
@@ -106,16 +107,41 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--config", default="configs/feedback.yaml")
     ap.add_argument("--input", help="Optional generated JSONL file to inspect")
+    ap.add_argument("--policies", nargs="*", default=["sft", "dpo", "ppo", "grpo"])
     args = ap.parse_args()
     cfg = load_yaml(args.config)
-    tok, model = load_judge(cfg)
-    print("Fixed Task 4 judge loaded:", cfg["ai_judge_model"])
+    outdir = repo_path(cfg["results_dir"]) / "task4_safety"
     if args.input:
         rows = read_jsonl(args.input)
         print("Input rows:", len(rows))
-    raise NotImplementedError(
-        "TODO(student): apply judge_one to your frozen-policy response files, cache the labels, and implement the required Task 4 aggregation."
-    )
+
+    todo = {}
+    for name in args.policies:
+        src = outdir / f"generated_{name}.jsonl"
+        if not src.exists():
+            print(f"[{name}] no generated responses yet - skipping")
+            continue
+        cache = outdir / f"judged_{name}.jsonl"
+        seen = {r["xstest_id"] for r in read_jsonl(cache)} if cache.exists() else set()
+        rows = [r for r in read_jsonl(src) if r["xstest_id"] not in seen]
+        print(f"[{name}] {len(seen)} already judged, {len(rows)} to go")
+        if rows:
+            todo[name] = (rows, cache)
+    if not todo:
+        print("Nothing left to judge.")
+        return
+
+    tok, model = load_judge(cfg)
+    print("Fixed Task 4 judge loaded:", cfg["ai_judge_model"])
+    max_new = int(cfg.get("judge_max_new_tokens", 64))
+    timer = wall_timer()
+    for name, (rows, cache) in todo.items():
+        for i, r in enumerate(rows):
+            out = judge_one(tok, model, r["prompt"], r["response"], max_new_tokens=max_new)
+            # one line per example straight away, so a disconnect only loses the current item
+            append_jsonl(cache, {"xstest_id": r["xstest_id"], "policy": name, **out})
+            if (i + 1) % 25 == 0 or i + 1 == len(rows):
+                print(f"[{name}] judged {i + 1}/{len(rows)}  ({timer():.0f}s)", flush=True)
 
 
 if __name__ == "__main__":

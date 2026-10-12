@@ -57,7 +57,8 @@ def _save(fig, d, stem):
 def _eval_cols(ev):
     return {"heldout_reward": ev["reward_mean"], "reward_sem": ev["reward_sem"], "kl_per_token": ev["kl_token_mean"],
             "entropy": ev["entropy_token_mean"], "len_mean": ev["length_tokens"]["mean"],
-            "len_median": ev["length_tokens"]["median"], "truncation_rate": ev["truncation_rate"]}
+            "len_std": ev["length_tokens"]["std"], "len_iqr": ev["length_tokens"]["iqr"],
+            "truncation_rate": ev["truncation_rate"]}
 
 
 def length_grad_stats(log):
@@ -137,20 +138,24 @@ def main():
             m = gs["per_k"][k]
             rows.append({"K": int(k), "bin": "all", "groups": m["num_groups"], "informative_rate": m["informative_rate"],
                          "informative@0.1sd": m["informative_rate_by_threshold"]["0.1"],
-                         "mean_group_std": m["mean_within_group_std"], "var_norm_adv": m["var_normalized_advantage"],
-                         "var_centred_reward": m["var_centred_reward"]})
+                         "mean_group_std": m["mean_within_group_std"], "var_centred_reward": m["var_centred_reward"],
+                         "var_norm_adv": m["var_normalized_advantage"]})
             for bname, bm in gs["per_k_per_bin"][k].items():
                 rows.append({"K": int(k), "bin": bname, "groups": bm["num_groups"], "informative_rate": bm["informative_rate"],
                              "informative@0.1sd": bm["informative_rate_by_threshold"]["0.1"],
-                             "mean_group_std": bm["mean_within_group_std"], "var_norm_adv": bm["var_normalized_advantage"],
-                             "var_centred_reward": bm["var_centred_reward"]})
+                             "mean_group_std": bm["mean_within_group_std"], "var_centred_reward": bm["var_centred_reward"],
+                             "var_norm_adv": bm["var_normalized_advantage"]})
         t = pd.DataFrame(rows)
         t.to_csv(res / "table_grpo_group_size.csv", index=False)
         (res / "table_grpo_group_size.md").write_text(
             f"{gs['num_prompts']} prompts x {gs['completions_per_prompt']} cached completions = {gs['total_completions']} "
             f"completions for every K. Informative = within-group std > {gs['std_tolerance']:g}; "
             f"informative@0.1sd uses 0.1 x overall reward std ({gs['reward_std']:.4g}). Bins: {gs['binning_rule']} "
-            f"(edges {', '.join(f'{e:.3g}' for e in gs['bin_edges_mean_reward'])}).\n\n" + _md(t) + "\n")
+            f"(edges {', '.join(f'{e:.3g}' for e in gs['bin_edges_mean_reward'])}). Variance of the group-relative signal: "
+            "var_centred_reward = Var(r - group mean), the unnormalised signal; after std-normalisation every informative "
+            "group has unit variance, so var_norm_adv just equals the informative rate. Group statistics include "
+            f"completions that hit the cache's generation cap (clipped fraction {gs.get('clipped_at_max_fraction', float('nan')):.3g}), "
+            "which training would mask.\n\n" + _md(t) + "\n")
         print("  wrote", res / "table_grpo_group_size.md")
 
         bins = ["hard", "medium", "easy"]
@@ -185,6 +190,9 @@ def main():
         r = {"condition": LABEL[name]}
         if ev:
             r.update(_eval_cols(ev))
+        meta_f = _load(res / name / "train_meta.json")
+        if meta_f:
+            r["generated_tokens"] = meta_f["generated_tokens"]
         if lg:
             r["train_len_first_update"] = lg[0]["response_length"]
             r["train_len_last_update"] = lg[-1]["response_length"]
@@ -196,6 +204,8 @@ def main():
         t.to_csv(res / "table_grpo_normalization.csv", index=False)
         (res / "table_grpo_normalization.md").write_text(
             f"Short forks ({cfg['fork_updates']} updates) from the GRPO midpoint; only the sequence normalization differs. "
+            "Both forks have the same allowance (same prompts, K, update count and per-completion cap); generated_tokens "
+            "is the realised on-policy token count. "
             "gradnorm_per_adv = norm of a completion's policy-term gradient divided by |advantage|; short/long split at "
             "the median completion length; share_of_grad_from_long_half = fraction of the summed per-completion "
             "gradient norm coming from the longer half.\n\n" + _md(t) + "\n")

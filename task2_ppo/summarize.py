@@ -130,14 +130,24 @@ def main():
             c = cached["per_epsilon"][f"{e:g}"]
             rows.append({"epsilon": e, "clip_frac_midpoint": c[0]["clip_fraction"],
                          "affected_frac_midpoint": c[0]["affected_fraction"],
+                         "clipped_surrogate_midpoint": c[0]["surrogate_clipped"],
+                         "unclipped_surrogate_midpoint": c[0]["surrogate_unclipped"],
                          "surrogate_gap_midpoint": c[0]["surrogate_gap"],
                          f"clip_frac_after_{c[-1]['epoch']}_steps": c[-1]["clip_fraction"],
                          f"affected_frac_after_{c[-1]['epoch']}_steps": c[-1]["affected_fraction"],
                          f"surrogate_gap_after_{c[-1]['epoch']}_steps": c[-1]["surrogate_gap"]})
         t = pd.DataFrame(rows)
         t.to_csv(res / "table_ppo_clipping_cached.csv", index=False)
+        agr = cached.get("logprob_agreement", {})
+        noise = ""
+        if agr:
+            noise = (f"Rebuilt batch check: recomputed vs cached reference log-probs differ by median {agr['ref_median_abs_diff']:.4f} "
+                     f"(mean {agr['ref_mean_abs_diff']:.4f}) nats/token; prompts matched {cached.get('prompt_match')}; "
+                     f"prompt renderings {agr.get('prompt_variant_counts')}; log-prob temperature {cached.get('logprob_temperature')}. "
+                     "This is the recomputation noise floor for the midpoint ratios. Advantages are whitened over the whole "
+                     "cached batch (training whitens per update, i.e. per rollout). ")
         (res / "table_ppo_clipping_cached.md").write_text(
-            f"Cached batch: {cached['num_rollouts']} rollouts, {cached['num_tokens']} response tokens. Clip fraction = "
+            noise + f"Cached batch: {cached['num_rollouts']} rollouts, {cached['num_tokens']} response tokens. Clip fraction = "
             "tokens with ratio outside [1-eps, 1+eps]; affected = tokens where the clipped term is the one used "
             "(gradient zeroed); surrogate gap = unclipped minus clipped surrogate, per token.\n\n" + _md(t) + "\n")
         print("  wrote", res / "table_ppo_clipping_cached.md")
@@ -151,7 +161,8 @@ def main():
             continue
         r = {"epsilon": e}
         if ev:
-            r.update({k: ev[k] for k in ("heldout_reward", "reward_sem", "kl_per_token", "entropy", "len_mean", "truncation_rate")})
+            r.update({k: ev[k] for k in ("heldout_reward", "reward_sem", "kl_per_token", "entropy", "len_mean", "len_std",
+                                         "truncation_rate")})
         r.update({k: st.get(k) for k in ("mean_post_update_kl", "max_post_update_kl", "mean_clip_fraction",
                                          "reward_std_over_updates", "generated_tokens")})
         rows.append(r)

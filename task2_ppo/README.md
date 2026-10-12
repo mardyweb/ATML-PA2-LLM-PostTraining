@@ -32,6 +32,19 @@ critic. For each epsilon it reports the clip fraction (ratio outside the band), 
 fraction (tokens where the clipped term is selected, so the gradient is zero) and the surrogate gap
 at the midpoint and after each PPO step on that batch.
 
-**Held-out evaluation** (`common/rl.py`, shared with Task 3): first 128 eval prompts, seed 6304,
+**Held-out evaluation** (`common/rl.py`, shared with Task 3): first 128 eval prompts that fit in `max_prompt_length` (256 tokens; longer ones are skipped, as in training), seed 6304,
 temperature 0.7, top-p 0.9, up to `eval_max_response_length` tokens; reward model score, KL to the
 reference on the sampled tokens, full-distribution entropy, length and truncation rate.
+
+**Notes to keep in mind when reading the numbers.**
+- Entropy is the entropy of the full next-token distribution, averaged over valid response tokens
+  (the manual's definition). The course helper `common.metrics.sample_entropy` instead averages
+  -log pi of the sampled tokens, which runs lower because sampling uses T=0.7 / top-p 0.9.
+- Prompts longer than 256 tokens are skipped (256 of the 1200 training prompts; the eval set is filtered
+  the same way) instead of being right-truncated by `batch_generate`, which would cut off the
+  assistant header. The same prompt list is used for every PPO/GRPO run; the IDs are in `train_meta.json`.
+- With one prompt per update, `normalize_advantages` whitens over the tokens of a single response, so
+  the policy loss is ~0 at ratio 1 and the update is driven by how the critic splits credit inside
+  the response.
+- Dropout is off during PPO updates (so the first epoch starts at ratio = 1), which also means HF
+  gradient checkpointing is inactive; peak VRAM is for that setting.

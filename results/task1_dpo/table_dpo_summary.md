@@ -1,8 +1,8 @@
-Standard and length-balanced runs train for one full epoch; the beta forks train on the first 600 pairs only (different budget). Preference accuracy is undefined for the SFT reference (margin is identically 0).
+Different training budgets: the standard and length-balanced runs train for one full epoch on their files; the beta forks train for one pass over the first 600 rows of the standard file (581 pairs after dropping prompts that do not fit in 768 tokens). For the SFT reference policy every margin is exactly 0, so its held-out accuracy (m > 0) is 0 and its loss is log 2 by definition. KL is the sampled-response estimator (log pi - log ref on the sampled tokens), pooled over all response tokens (kl_per_token, the course sampled_kl convention); kl_per_seq is the per-sequence sum. Wall-clock/VRAM are for the final (uninterrupted) training session.
 
 | condition | train_pairs | optimizer_steps | beta | heldout_loss_own_beta | heldout_loss_beta0.1 | heldout_pref_acc | heldout_margin_mean | kl_per_token | kl_per_seq | rm_mean | rm_std | len_tok_mean | len_tok_std | len_tok_median | len_tok_iqr | truncation_rate | word_limit_compliance | train_wall_clock_s | train_peak_vram_gb |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
-| SFT / reference (no DPO) | 0 | 0 |  |  | 0.6931 |  | 0 | 0 | 0 | 1.389 | 1.164 | 156.3 | 103.6 | 194.5 | 210 | 0.4218 | 0.575 |  |  |
+| SFT / reference (no DPO) | 0 | 0 |  |  | 0.6931 | 0 | 0 | 0 | 0 | 1.389 | 1.164 | 156.3 | 103.6 | 194.5 | 210 | 0.4218 | 0.575 |  |  |
 | Standard DPO (1 epoch) | 1446 | 91 | 0.1 | 0.6739 | 0.6739 | 0.631 | 0.4522 | -2.727e-05 | -0.004289 | 1.309 | 1.187 | 157.3 | 103.9 | 203 | 210 | 0.4388 | 0.55 | 252.8 | 8.39 |
 | Short fork beta=0.03 | 581 | 37 | 0.03 | 0.691 | 0.6863 | 0.6069 | 0.1474 | -0.0002406 | -0.03718 | 1.341 | 1.141 | 154.6 | 103.8 | 187.5 | 213.2 | 0.4252 | 0.575 | 102.1 | 8.39 |
 | Short fork beta=0.1 | 581 | 37 | 0.1 | 0.6868 | 0.6868 | 0.5966 | 0.1356 | -0.0002654 | -0.04133 | 1.317 | 1.16 | 155.7 | 103.9 | 193.5 | 210.8 | 0.432 | 0.575 | 102.1 | 8.39 |
