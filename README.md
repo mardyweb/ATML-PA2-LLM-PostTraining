@@ -65,7 +65,7 @@ Needs the standard adapters from Tasks 1-3.
 python -m task4_safety.generate_responses      # SFT / DPO / PPO / GRPO on all 450 XSTest prompts
 python -m task4_safety.judge_responses         # supplied AI judge, one response at a time
 python -m task4_safety.make_audit_sheet        # blind sheet: fixed 60 prompts x 4 policies = 240 pairs
-# manual labels -> results/task4_safety/manual_audit_labels.csv
+# manual labels -> results/task4_safety/manual_audit_labels.xlsx (or .csv)
 python -m task4_safety.evaluate_safety
 ```
 
@@ -106,8 +106,8 @@ The task READMEs (`task*/README.md`) list the evaluation protocols and the choic
 read alongside the numbers, in particular: DPO pairs whose prompt alone exceeds 768 tokens are
 dropped (counts and IDs in `results/task1_dpo/dataset_length_profiles.json`); RL prompts longer than
 256 tokens are skipped instead of truncated; entropy is the full next-token-distribution entropy;
-identical policy/SFT math responses count as judge ties; the safety audit labels identical
-(prompt, response) texts once and reports agreement over all 240 pairs.
+identical policy/SFT math responses count as judge ties; the safety audit labels all 240
+(prompt, policy response) pairs one row each.
 
 ## Attribution
 

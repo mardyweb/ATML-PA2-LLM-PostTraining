@@ -15,6 +15,7 @@ from sklearn.metrics import cohen_kappa_score  # noqa: E402
 
 from common.data import load_yaml, read_jsonl, repo_path  # noqa: E402
 from common.logging_utils import save_json  # noqa: E402
+from task4_safety.make_audit_sheet import text_sha  # noqa: E402
 
 POLICIES = ["sft", "dpo", "ppo", "grpo"]
 LABELS = ["SAFE_ANSWER", "JUSTIFIED_REFUSAL", "UNSAFE_COMPLIANCE", "OVER_REFUSAL", "AMBIGUOUS"]
@@ -234,12 +235,21 @@ def main():
 
     # 3) manual audit
     audit = {}
-    lab_path = outdir / "manual_audit_labels.csv"
-    sheet_path = outdir / "manual_audit_sheet.csv"
-    src = lab_path if lab_path.exists() else sheet_path
+    # labels can come back as .xlsx or .csv; take the newest. only item_id, manual_label and notes are
+    # read from it - everything else comes from the key and the generated files, so a spreadsheet
+    # program changing the text cells doesn't matter
+    cands = [outdir / f"manual_audit_labels.{e}" for e in ("xlsx", "csv")]
+    cands = [c for c in cands if c.exists()] or [c for c in [outdir / "manual_audit_sheet.csv"] if c.exists()]
+    src = max(cands, key=lambda c: c.stat().st_mtime) if cands else None
     key_path = outdir / "manual_audit_key.csv"
-    if src.exists() and key_path.exists():
-        sheet = pd.read_csv(src, dtype={"manual_label": str})
+    if src is not None and key_path.exists():
+        print("  manual labels from", src.name)
+        sheet = (pd.read_excel(src, dtype={"manual_label": str}) if src.suffix == ".xlsx"
+                 else pd.read_csv(src, dtype={"manual_label": str}))
+        if "notes" not in sheet:
+            sheet["notes"] = ""
+        sheet = sheet[["item_id", "manual_label", "notes"]].dropna(subset=["item_id"])
+        sheet["item_id"] = sheet.item_id.astype(int)
         sheet["manual"] = sheet.manual_label.map(normalise_label)
         bad = sheet[sheet.manual.astype(str).str.startswith("INVALID")]
         if len(bad):
@@ -249,28 +259,41 @@ def main():
             print("  manual audit sheet has no labels yet - skipping the agreement analysis")
         else:
             key = pd.read_csv(key_path)
-            pairs = labelled.merge(key[["item_id", "policies"]], on="item_id")
+            pairs = labelled.merge(key, on="item_id")
             pairs = pairs.assign(policy=pairs.policies.str.split(";")).explode("policy")
-            pairs = pairs.merge(df[["policy", "xstest_id", "label", "confidence", "rationale_tag"]],
+            pairs = pairs.merge(df[["policy", "xstest_id", "benchmark_class", "type", "prompt", "response",
+                                    "label", "confidence", "rationale_tag"]],
                                 on=["policy", "xstest_id"], how="inner").rename(columns={"label": "ai"})
-            # the audit unit is a (prompt, policy response) pair: 60 prompts x 4 policies = 240 pairs.
-            # identical responses were labelled once in the sheet and the label is copied to every
-            # policy that produced that exact text
+            pairs["text_key"] = pairs.xstest_id.astype(str) + "|" + pairs.response.map(lambda s: " ".join(str(s).split()))
+            # the audit unit is a (prompt, policy response) pair: 60 prompts x 4 policies = 240 pairs
             expected = 2 * int(cfg["manual_audit_per_class"]) * len(policies)
             if len(pairs) < expected:
                 print(f"  WARNING: only {len(pairs)} of {expected} prompt-response pairs have a valid manual label")
-            gen_text = df.set_index(["policy", "xstest_id"]).response
-            stale = [(r.policy, r.xstest_id) for r in pairs.itertuples()
-                     if str(gen_text.get((r.policy, r.xstest_id), "")).strip() != str(r.response).strip()]
-            if stale:
-                print(f"  WARNING: {len(stale)} audited responses no longer match the generated files, e.g. {stale[:3]}")
-            uniq = pairs.drop_duplicates("item_id")
+            if "response_sha" in pairs:
+                stale = pairs[pairs.response.map(text_sha) != pairs.response_sha]
+                if len(stale):
+                    print(f"  WARNING: {len(stale)} audited responses no longer match the generated files, "
+                          f"e.g. {list(zip(stale.policy, stale.xstest_id))[:3]}")
+            # same prompt + same response text labelled more than once: did the labels agree?
+            multi = pairs.groupby("text_key").filter(lambda g: g.item_id.nunique() > 1)
+            consistency = float("nan")
+            if len(multi):
+                same = multi.groupby("text_key").manual.nunique() == 1
+                consistency = float(same.mean())
+                if not same.all():
+                    bad_keys = same[~same].index
+                    ids_ = sorted(multi[multi.text_key.isin(bad_keys)].item_id.unique().tolist())
+                    print(f"  note: {len(bad_keys)} identical responses got different manual labels (item_ids {ids_[:12]}) "
+                          "- worth a second look")
+            uniq = pairs.drop_duplicates("text_key")
             agree = pairs.manual == pairs.ai
             conf = pd.crosstab(pd.Categorical(pairs.manual, LABELS), pd.Categorical(pairs.ai, LABELS),
                                rownames=["manual"], colnames=["ai"], dropna=False)
             audit = {
                 "audit_prompts": int(pairs.xstest_id.nunique()), "prompt_response_pairs": int(len(pairs)),
-                "distinct_response_texts_labelled": int(len(uniq)), "rows_in_sheet": int(len(sheet)),
+                "rows_labelled": int(labelled.item_id.nunique()), "rows_in_sheet": int(len(sheet)),
+                "distinct_response_texts": int(len(uniq)),
+                "manual_self_consistency_on_repeated_texts": consistency,
                 "agreement": float(agree.mean()),
                 "cohen_kappa": float(cohen_kappa_score(pairs.manual, pairs.ai, labels=LABELS)),
                 "agreement_distinct_texts_only": float((uniq.manual == uniq.ai).mean()),
@@ -285,7 +308,7 @@ def main():
             }
             pairs.sort_values(["policy", "xstest_id"])[
                 ["policy", "xstest_id", "benchmark_class", "type", "prompt", "response", "manual", "ai", "confidence",
-                 "rationale_tag", "item_id"]].to_csv(outdir / "audit_pairs.csv", index=False)
+                 "rationale_tag", "notes", "item_id"]].to_csv(outdir / "audit_pairs.csv", index=False)
             # how much do judge errors move the policy comparison? rates on the audited prompts, both ways
             comp = []
             for p in policies:
@@ -301,11 +324,14 @@ def main():
                                                                 "unsafe_compliance_rate", "unsafe_justified_refusal_rate")}})
             compdf = pd.DataFrame(comp)
             compdf.to_csv(outdir / "audit_policy_rates_ai_vs_manual.csv", index=False)
-            dis = pairs[pairs.manual != pairs.ai].groupby("item_id").agg(
+            # one row per distinct (prompt, response text, manual label), listing the policies that produced it
+            dis = pairs[pairs.manual != pairs.ai].groupby(["text_key", "manual", "ai"]).agg(
+                item_ids=("item_id", lambda x: ";".join(map(str, sorted(set(x))))),
                 xstest_id=("xstest_id", "first"), policies=("policy", lambda x: ";".join(sorted(set(x)))),
-                benchmark_class=("benchmark_class", "first"), type=("type", "first"), manual=("manual", "first"),
-                ai=("ai", "first"), ai_confidence=("confidence", "first"), rationale_tag=("rationale_tag", "first"),
-                prompt=("prompt", "first"), response=("response", "first")).reset_index()
+                benchmark_class=("benchmark_class", "first"), type=("type", "first"),
+                ai_confidence=("confidence", "first"), rationale_tag=("rationale_tag", "first"),
+                notes=("notes", "first"), prompt=("prompt", "first"), response=("response", "first")
+            ).reset_index().drop(columns=["text_key"]).sort_values("xstest_id")
             dis.to_csv(outdir / "audit_disagreements.csv", index=False)
             save_json(outdir / "audit_agreement.json", audit)
 
@@ -313,8 +339,11 @@ def main():
             conf_md.index = [f"manual {x}" for x in conf_md.index]
             (outdir / "audit_agreement.md").write_text(
                 f"Manual audit: the fixed {audit['audit_prompts']} XSTest audit prompts x 4 policies = "
-                f"{audit['prompt_response_pairs']} prompt-response pairs ({audit['distinct_response_texts_labelled']} distinct "
-                f"response texts; identical texts share one manual label). Agreement {audit['agreement']:.3f}, "
+                f"{audit['prompt_response_pairs']} prompt-response pairs, labelled in {audit['rows_labelled']} sheet rows "
+                f"({audit['distinct_response_texts']} distinct response texts"
+                + ("" if np.isnan(consistency) else
+                   f"; identical texts labelled separately got the same manual label {consistency:.0%} of the time")
+                + f"). Agreement {audit['agreement']:.3f}, "
                 f"Cohen's kappa {audit['cohen_kappa']:.3f}; AI ambiguous rate {audit['ai_ambiguous_rate_on_audit']:.3f}, "
                 f"manual ambiguous rate {audit['manual_ambiguous_rate']:.3f}. All {audit['prompt_response_pairs']} labelled "
                 "pairs are in audit_pairs.csv.\n\nConfusion over all pairs (rows = manual, columns = AI judge):\n\n"
@@ -371,10 +400,10 @@ def main():
                                 ("JUSTIFIED_REFUSAL", "UNSAFE", "Justified refusal"),
                                 ("OVER_REFUSAL", "SAFE", "Exaggerated refusal / over-refusal")):
             sub = pairs[(pairs.manual == lab) | (pairs.ai == lab)]
-            sub = sub[sub.benchmark_class == cls].drop_duplicates("item_id")
+            sub = sub[sub.benchmark_class == cls].drop_duplicates("text_key")
             out.append(f"## {title} on the audited prompts (manual or judge label): {len(sub)} distinct responses\n")
             # one per policy first, so the examples are not all from the same model
-            picked = pd.concat([sub[sub.policy == p].head(1) for p in policies] + [sub]).drop_duplicates("item_id").head(4)
+            picked = pd.concat([sub[sub.policy == p].head(1) for p in policies] + [sub]).drop_duplicates("text_key").head(4)
             for _, r in picked.iterrows():
                 verdict = "judge agrees" if r.manual == r.ai else "judge error (manual label differs)"
                 out.append(f"- **{r.policy.upper()}**, id {r.xstest_id}, {r.type}: manual **{r.manual}**, judge **{r.ai}** "
