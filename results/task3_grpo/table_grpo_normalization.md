@@ -1,6 +1,6 @@
-Short forks (8 updates) from the GRPO midpoint; only the sequence normalization differs. gradnorm_per_adv = norm of a completion's policy-term gradient divided by |advantage|; short/long split at the median completion length; share_of_grad_from_long_half = fraction of the summed per-completion gradient norm coming from the longer half.
+Short forks (8 updates) from the GRPO midpoint; only the sequence normalization differs. Both forks have the same allowance (same prompts, K, update count and per-completion cap); generated_tokens is the realised on-policy token count. gradnorm_per_adv = norm of a completion's policy-term gradient divided by |advantage|; short/long split at the median completion length; share_of_grad_from_long_half = fraction of the summed per-completion gradient norm coming from the longer half.
 
-| condition | heldout_reward | reward_sem | kl_per_token | entropy | len_mean | len_median | truncation_rate | train_len_first_update | train_len_last_update | train_reward_mean | completions_used | corr_length_vs_gradnorm_per_adv | median_length | gradnorm_per_adv_short | gradnorm_per_adv_long | share_of_grad_from_long_half |
-|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
-| GRPO (1/T) | 1.745 | 0.1205 | 7.929e-05 | 0.9918 | 288.8 | 222 | 0.07812 | 427.5 | 155.5 | 1.649 | 27 | -0.7612 | 272 | 0.2938 | 0.07069 | 0.149 |
-| Dr. GRPO (1/L) | 1.743 | 0.1188 | 0.0001304 | 1 | 297.1 | 245 | 0.07812 | 427.5 | 127.2 | 1.738 | 27 | 0.5617 | 283 | 0.03944 | 0.05243 | 0.4741 |
+| condition | heldout_reward | reward_sem | kl_per_token | entropy | len_mean | len_std | len_iqr | truncation_rate | generated_tokens | train_len_first_update | train_len_last_update | train_reward_mean | completions_used | corr_length_vs_gradnorm_per_adv | median_length | gradnorm_per_adv_short | gradnorm_per_adv_long | share_of_grad_from_long_half |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| GRPO (1/T) | 1.745 | 0.1205 | 7.929e-05 | 0.9918 | 288.8 | 257.1 | 446 | 0.07812 | 9480 | 427.5 | 155.5 | 1.649 | 27 | -0.7612 | 272 | 0.2938 | 0.07069 | 0.149 |
+| Dr. GRPO (1/L) | 1.743 | 0.1188 | 0.0001304 | 1 | 297.1 | 256.9 | 456.8 | 0.07812 | 9232 | 427.5 | 127.2 | 1.738 | 27 | 0.5617 | 283 | 0.03944 | 0.05243 | 0.4741 |
